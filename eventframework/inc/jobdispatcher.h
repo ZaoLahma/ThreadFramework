@@ -84,6 +84,8 @@ private:
 
 		void Notify();
 
+		void Stop();
+
 	protected:
 
 	private:

@@ -8,21 +8,21 @@ running(false)
 
 ThreadObject::~ThreadObject()
 {
-	stop();
-
-	if(this->executorThread.joinable())
-	{
-		this->executorThread.join();
-	}
+	Stop();
 }
 
-void ThreadObject::start()
+void ThreadObject::Start()
 {
 	running = true;
 	this->executorThread = std::thread(&ThreadObject::run, this);
 }
 
-void ThreadObject::stop()
+void ThreadObject::Stop()
 {
 	running = false;
+
+	if(this->executorThread.joinable())
+	{
+		this->executorThread.join();
+	}
 }

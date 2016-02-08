@@ -18,7 +18,7 @@ currentWorkerIndex(0)
 	for(uint32_t i = 0; i < noOfCores; ++i)
 	{
 		Worker* worker = new Worker(&jobQueue);
-		worker->start();
+		worker->Start();
 		workers.push_back(worker);
 	}
 }
@@ -29,8 +29,7 @@ JobDispatcher::~JobDispatcher()
 
 	for( ; workerIter != workers.end(); ++workerIter)
 	{
-		(*workerIter)->stop();
-		(*workerIter)->Notify();
+		(*workerIter)->Stop();
 	}
 }
 
@@ -227,13 +226,6 @@ void JobDispatcher::Worker::run()
 {
 	while(running)
 	{
-		executionNotification.wait(executionLock);
-
-		if(!running)
-		{
-			break;
-		}
-
 		JobBase* jobPtr = queuePtr->GetNextJob();
 		while(jobPtr != nullptr)
 		{
@@ -241,6 +233,19 @@ void JobDispatcher::Worker::run()
 			delete jobPtr;
 			jobPtr = queuePtr->GetNextJob();
 		}
+
+		executionNotification.wait(executionLock);
+	}
+}
+
+void JobDispatcher::Worker::Stop()
+{
+	running = false;
+	Notify();
+
+	if(this->executorThread.joinable())
+	{
+		this->executorThread.join();
 	}
 }
 

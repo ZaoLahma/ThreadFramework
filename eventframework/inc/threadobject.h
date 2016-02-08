@@ -8,12 +8,12 @@ class ThreadObject
 {
 	private:
 	
-	std::thread executorThread;
-	
 	virtual void run() = 0;
 	
 	protected:
 	
+	std::thread executorThread;
+
 	std::atomic<bool> running;
 	
 	public:
@@ -21,9 +21,9 @@ class ThreadObject
 	ThreadObject();
 	virtual ~ThreadObject();
 	
-	virtual void start();
+	virtual void Start();
 	
-	virtual void stop();
+	virtual void Stop();
 };
 
 #endif
