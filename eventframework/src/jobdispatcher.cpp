@@ -11,6 +11,7 @@ JobDispatcher* JobDispatcher::instance = nullptr;
 std::mutex JobDispatcher::instanceCreationMutex;
 
 JobDispatcher::JobDispatcher() :
+executionFinishedNotificationLock(executionFinishedNotificationMutex),
 currentWorkerIndex(0)
 {
 	uint32_t noOfCores = std::thread::hardware_concurrency();
@@ -126,11 +127,21 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo)
 
 		for( ; eventListenerIter != eventIter->second.end(); ++eventListenerIter)
 		{
-			JobDispatcher::EventJob* eventJob = new JobDispatcher::EventJob(*eventListenerIter);
+			JobDispatcher::EventJob* eventJob = new JobDispatcher::EventJob(*eventListenerIter, eventNo);
 
 			JobDispatcher::GetApi()->ExecuteJob(eventJob);
 		}
 	}
+}
+
+void JobDispatcher::WaitForExecutionFinished()
+{
+	executionFinishedNotification.wait(executionFinishedNotificationLock);
+}
+
+void JobDispatcher::NotifyExecutionFinished()
+{
+	executionFinishedNotification.notify_one();
 }
 
 //JobQueue
@@ -206,15 +217,16 @@ JobDispatcher::JobQueue::~JobQueue()
  }
 
 //EventJob
-JobDispatcher::EventJob::EventJob(EventListenerBase* _eventListenerPtr) :
-eventListenerPtr(_eventListenerPtr)
+JobDispatcher::EventJob::EventJob(EventListenerBase* _eventListenerPtr, const uint32_t _eventNo) :
+eventListenerPtr(_eventListenerPtr),
+eventNo(_eventNo)
 {
 
 }
 
 void JobDispatcher::EventJob::Execute()
 {
-	eventListenerPtr->HandleEvent();
+	eventListenerPtr->HandleEvent(eventNo);
 }
 
 //Worker

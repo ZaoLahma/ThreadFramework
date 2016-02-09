@@ -15,7 +15,7 @@ class EventListenerBase
 {
 public:
 	virtual ~EventListenerBase() {}
-	virtual void HandleEvent() = 0;
+	virtual void HandleEvent(const uint32_t eventNo) = 0;
 
 protected:
 

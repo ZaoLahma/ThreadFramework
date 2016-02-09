@@ -17,18 +17,18 @@
 class WordFinder : public EventListenerBase
 {
 public:
-	WordFinder(const std::string& string, const std::string& wordToFind, uint32_t eventOffset);
+	WordFinder(const std::string& string, const std::string& wordToFind, const uint32_t _instanceNo);
 
-	void HandleEvent();
+	void HandleEvent(const uint32_t eventNo);
 
 private:
 	WordFinder();
 
 	WordFinderData jobData;
 
-	uint32_t eventOffset;
+	const uint32_t instanceNo;
 
-	static std::mutex printMutex;
+	static std::mutex instanceMutex;
 };
 
 

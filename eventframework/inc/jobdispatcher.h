@@ -37,6 +37,10 @@ public:
 
 	void RaiseEvent(const uint32_t eventNo);
 
+	void WaitForExecutionFinished();
+
+	void NotifyExecutionFinished();
+
 protected:
 
 private:
@@ -67,7 +71,7 @@ private:
 	class EventJob : public JobBase
 	{
 	public:
-		EventJob(EventListenerBase* _eventListenerPtr);
+		EventJob(EventListenerBase* _eventListenerPtr, const uint32_t _eventNo);
 
 		void Execute();
 	protected:
@@ -75,6 +79,8 @@ private:
 		EventJob();
 
 		EventListenerBase* eventListenerPtr;
+
+		const uint32_t eventNo;
 	};
 
 	class Worker : public ThreadObject
@@ -100,6 +106,10 @@ private:
 
 	std::mutex eventListenersAccessMutex;
 
+	std::mutex executionFinishedNotificationMutex;
+	std::unique_lock<std::mutex> executionFinishedNotificationLock;
+	std::condition_variable executionFinishedNotification;
+
 	typedef std::vector<Worker*> WorkerPtrVector;
 
 	uint32_t currentWorkerIndex;
@@ -112,7 +122,6 @@ private:
 
 	JobDispatcher();
 	static std::mutex instanceCreationMutex;
-
 	static JobDispatcher* instance;
 
 };

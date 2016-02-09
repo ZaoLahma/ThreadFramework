@@ -19,8 +19,8 @@ noOfOccurances(0)
 
 }
 
-WordFinderJob::WordFinderJob(const uint32_t _eventOffset) :
-eventOffset(_eventOffset)
+WordFinderJob::WordFinderJob(const uint32_t _instanceNo) :
+instanceNo(_instanceNo)
 {
 
 }
@@ -39,5 +39,5 @@ void WordFinderJob::Execute()
 		pos = wordFinderDataPtr->wordString.find(wordFinderDataPtr->wordToFind, pos + 1);
 	}
 
-	JobDispatcher::GetApi()->RaiseEvent(WORD_FINDER_JOB_FINISHED + eventOffset);
+	JobDispatcher::GetApi()->RaiseEvent(WORD_FINDER_JOB_FINISHED + instanceNo);
 }

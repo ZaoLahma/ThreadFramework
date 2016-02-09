@@ -33,14 +33,15 @@ private:
 class WordFinderJob : public JobBase
 {
 public:
-	WordFinderJob(const uint32_t _eventOffset);
+	WordFinderJob(const uint32_t _instanceNo);
 
 	void Execute();
 protected:
 
 private:
 	WordFinderJob();
-	uint32_t eventOffset;
+
+	const uint32_t instanceNo;
 
 };
 
