@@ -20,7 +20,7 @@
 #include "threadobject.h"
 
 
-class JobDispatcher
+class JobDispatcher : EventListenerBase
 {
 public:
 	static JobDispatcher* GetApi();
@@ -30,6 +30,10 @@ public:
 	virtual ~JobDispatcher();
 
 	void ExecuteJob(JobBase* jobPtr);
+
+	void ExecuteJobIn(JobBase* jobPtr, const uint32_t ms);
+
+	void RaiseEventIn(const uint32_t eventNo, const uint32_t ms);
 
 	void SubscribeToEvent(const uint32_t eventNo, EventListenerBase* eventListenerPtr);
 
@@ -104,6 +108,32 @@ private:
 		void run();
 	};
 
+	class TimerBase : public ThreadObject
+	{
+	public:
+		virtual ~TimerBase() {}
+
+	private:
+	};
+
+	typedef std::vector<TimerBase*> TimerBasePtrVector;
+
+	class JobTimer : public TimerBase
+	{
+	public:
+		JobTimer(JobBase* _jobPtr, const uint32_t _ms);
+
+		void run();
+
+	protected:
+
+	private:
+		const uint32_t ms;
+		JobBase* jobPtr;
+	};
+
+	void HandleEvent(const uint32_t eventNo);
+
 	std::mutex eventListenersAccessMutex;
 
 	std::mutex executionFinishedNotificationMutex;
@@ -119,6 +149,8 @@ private:
 	JobQueue jobQueue;
 
 	SubscriberEventMap eventListeners;
+
+	TimerBasePtrVector timers;
 
 	JobDispatcher();
 	static std::mutex instanceCreationMutex;

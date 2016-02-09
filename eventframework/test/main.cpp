@@ -6,6 +6,16 @@
  */
 
 #include "wordfinder.h"
+#include "jobbase.h"
+
+class EndExecutionJob : public JobBase
+{
+public:
+	void Execute()
+	{
+		JobDispatcher::GetApi()->NotifyExecutionFinished();
+	}
+};
 
 int main(void)
 {
@@ -26,6 +36,15 @@ int main(void)
 	WordFinder wf_4("There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel.",
 			        "parallel",
 					instanceNo++);
+
+	EndExecutionJob* endExecutionJobPtr = new EndExecutionJob();
+
+	const uint32_t msToSleep = 300;
+
+	JobDispatcher::GetApi()->ExecuteJobIn(endExecutionJobPtr, msToSleep);
+
+	//Give up control of the execution to the job that will finish it
+	JobDispatcher::GetApi()->WaitForExecutionFinished();
 
 	JobDispatcher::DropInstance();
 }

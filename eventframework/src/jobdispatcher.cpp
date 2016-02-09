@@ -72,6 +72,18 @@ void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 	}
 }
 
+void JobDispatcher::ExecuteJobIn(JobBase* jobPtr, const uint32_t ms)
+{
+	JobDispatcher::JobTimer* timerPtr = new JobDispatcher::JobTimer(jobPtr, ms);
+	/*
+	 * TODO: Fix memory leak as described below:
+	 *
+	 * Store timer in timers vector
+	 * Need to assign a unique ID to the timer which it will raise as an event.
+	 * When the event is received, delete the corresponding timer.
+	 */
+}
+
 void JobDispatcher::SubscribeToEvent(uint32_t eventNo, EventListenerBase* eventListenerPtr)
 {
 	std::lock_guard<std::mutex> subscribersLock(eventListenersAccessMutex);
@@ -132,6 +144,11 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo)
 			JobDispatcher::GetApi()->ExecuteJob(eventJob);
 		}
 	}
+}
+
+void JobDispatcher::HandleEvent(const uint32_t eventNo)
+{
+	//TODO: Find timer when it has fired and delete it
 }
 
 void JobDispatcher::WaitForExecutionFinished()
@@ -271,5 +288,19 @@ void JobDispatcher::Worker::Stop()
 	{
 		this->executorThread.join();
 	}
+}
+
+//JobTimer
+JobDispatcher::JobTimer::JobTimer(JobBase* _jobPtr, const uint32_t _ms) :
+ms(_ms),
+jobPtr(_jobPtr)
+{
+	this->Start();
+}
+
+void JobDispatcher::JobTimer::run()
+{
+	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+	JobDispatcher::GetApi()->ExecuteJob(jobPtr);
 }
 
