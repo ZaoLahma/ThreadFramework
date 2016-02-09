@@ -19,6 +19,10 @@ public:
 
 int main(void)
 {
+	/*
+	 * In this example instanceNo is used to make sure each WordFinder instance
+	 * will raise its own unique event.
+	 */
 	uint32_t instanceNo = 0;
 
 	WordFinder wf_1("this is a test string where we try to find the word test",

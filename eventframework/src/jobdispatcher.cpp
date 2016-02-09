@@ -286,7 +286,7 @@ JobDispatcher::JobTimer::JobTimer(JobBase* _jobPtr, const uint32_t _ms) :
 ms(_ms),
 jobPtr(_jobPtr)
 {
-	this->Start();
+
 }
 
 void JobDispatcher::JobTimer::run()
@@ -318,6 +318,7 @@ void JobDispatcher::TimerStorage::StoreTimer(TimerBase* _timer)
 	JobDispatcher::GetApi()->SubscribeToEvent(currentId, this);
 	_timer->SetTimerId(currentId);
 	timers[currentId] = _timer;
+	_timer->Start();
 
 	currentId++;
 }
