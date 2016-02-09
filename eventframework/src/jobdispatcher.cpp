@@ -6,6 +6,7 @@
  */
 
 #include "jobdispatcher.h"
+#include <iostream>
 
 JobDispatcher* JobDispatcher::instance = nullptr;
 std::mutex JobDispatcher::instanceCreationMutex;
@@ -314,6 +315,7 @@ void JobDispatcher::TimerStorage::StoreTimer(TimerBase* _timer)
 		currentId = idBase;
 	}
 
+	JobDispatcher::GetApi()->SubscribeToEvent(currentId, this);
 	_timer->SetTimerId(currentId);
 	timers[currentId] = _timer;
 
@@ -322,6 +324,8 @@ void JobDispatcher::TimerStorage::StoreTimer(TimerBase* _timer)
 
 void JobDispatcher::TimerStorage::HandleEvent(const uint32_t _eventNo)
 {
+	JobDispatcher::GetApi()->UnsubscribeToEvent(_eventNo, this);
+
 	std::unique_lock<std::mutex> timersMapLock(timerMutex);
 
 	TimerBaseMap::iterator timerIter = timers.find(_eventNo);
