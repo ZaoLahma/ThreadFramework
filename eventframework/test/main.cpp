@@ -5,13 +5,7 @@
  *      Author: janne
  */
 
-#include "jobdispatcher.h"
 #include "wordfinder.h"
-
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <atomic>
 
 int main(void)
 {
@@ -19,9 +13,9 @@ int main(void)
 
 	WordFinder wf_2("here we try to find the word word for the sake of finding word", "word", 1);
 
-	/*
-	 * Sleep a bit to allow the framework perform its job.
-	 * Normally there would be a blocking call here to keep things running
-	 */
-	std::this_thread::sleep_for(std::chrono::milliseconds(20));
+	WordFinder wf_3("Another semi random sentence just to get a semi parallel execution. Why not, I must ask.", "sentence", 3);
+
+	WordFinder wf_4("There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel.", "parallel", 4);
+
+	JobDispatcher::DropInstance();
 }

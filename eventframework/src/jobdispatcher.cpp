@@ -30,7 +30,10 @@ JobDispatcher::~JobDispatcher()
 	for( ; workerIter != workers.end(); ++workerIter)
 	{
 		(*workerIter)->Stop();
+		delete (*workerIter);
 	}
+
+	workers.clear();
 }
 
 JobDispatcher* JobDispatcher::GetApi()
@@ -99,6 +102,12 @@ void JobDispatcher::UnsubscribeToEvent(uint32_t eventNo, EventListenerBase* even
 			if(*eventListenersIter == eventListenerPtr)
 			{
 				eventIter->second.erase(eventListenersIter);
+
+				if(0 == eventIter->second.size())
+				{
+					eventListeners.erase(eventIter);
+				}
+
 				break;
 			}
 		}
@@ -234,7 +243,10 @@ void JobDispatcher::Worker::run()
 			jobPtr = queuePtr->GetNextJob();
 		}
 
-		executionNotification.wait(executionLock);
+		if(running)
+		{
+			executionNotification.wait(executionLock);
+		}
 	}
 }
 
