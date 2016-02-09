@@ -37,14 +37,28 @@ int main(void)
 			        "parallel",
 					instanceNo++);
 
+
+	/*
+	 * Just as an example I will let this particular program be ended by a
+	 * job that will execute in 300ms. This should leave plenty of time for
+	 * the framework to process the word finding jobs...
+	 *
+	 * Normally the end of the execution would be triggered by an external
+	 * event
+	 */
 	EndExecutionJob* endExecutionJobPtr = new EndExecutionJob();
-
 	const uint32_t msToSleep = 300;
-
 	JobDispatcher::GetApi()->ExecuteJobIn(endExecutionJobPtr, msToSleep);
 
-	//Give up control of the execution to the job that will finish it
+	/*
+	 * Give up control of the execution to the job that will finish it
+	 * by calling this blocking function
+	 */
 	JobDispatcher::GetApi()->WaitForExecutionFinished();
 
+
+	/*
+	 * Just to clean up
+	 */
 	JobDispatcher::DropInstance();
 }

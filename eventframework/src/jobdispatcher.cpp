@@ -75,20 +75,15 @@ void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 void JobDispatcher::ExecuteJobIn(JobBase* jobPtr, const uint32_t ms)
 {
 	JobDispatcher::JobTimer* timerPtr = new JobDispatcher::JobTimer(jobPtr, ms);
-	/*
-	 * TODO: Fix memory leak as described below:
-	 *
-	 * Store timer in timers vector
-	 * Need to assign a unique ID to the timer which it will raise as an event.
-	 * When the event is received, delete the corresponding timer.
-	 */
+
+	timerStorage.StoreTimer(timerPtr);
 }
 
 void JobDispatcher::SubscribeToEvent(uint32_t eventNo, EventListenerBase* eventListenerPtr)
 {
 	std::lock_guard<std::mutex> subscribersLock(eventListenersAccessMutex);
 
-	SubscriberEventMap::iterator eventIter = eventListeners.find(eventNo);
+	EventListenersMap::iterator eventIter = eventListeners.find(eventNo);
 
 	if(eventListeners.end() == eventIter)
 	{
@@ -104,7 +99,7 @@ void JobDispatcher::UnsubscribeToEvent(uint32_t eventNo, EventListenerBase* even
 {
 	std::lock_guard<std::mutex> subscribersLock(eventListenersAccessMutex);
 
-	SubscriberEventMap::iterator eventIter = eventListeners.find(eventNo);
+	EventListenersMap::iterator eventIter = eventListeners.find(eventNo);
 
 	if(eventListeners.end() != eventIter)
 	{
@@ -131,7 +126,7 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo)
 {
 	std::lock_guard<std::mutex> subscribersLock(eventListenersAccessMutex);
 
-	SubscriberEventMap::iterator eventIter = eventListeners.find(eventNo);
+	EventListenersMap::iterator eventIter = eventListeners.find(eventNo);
 
 	if(eventListeners.end() != eventIter)
 	{
@@ -144,11 +139,6 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo)
 			JobDispatcher::GetApi()->ExecuteJob(eventJob);
 		}
 	}
-}
-
-void JobDispatcher::HandleEvent(const uint32_t eventNo)
-{
-	//TODO: Find timer when it has fired and delete it
 }
 
 void JobDispatcher::WaitForExecutionFinished()
@@ -302,5 +292,43 @@ void JobDispatcher::JobTimer::run()
 {
 	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 	JobDispatcher::GetApi()->ExecuteJob(jobPtr);
+	JobDispatcher::GetApi()->RaiseEvent(timerId);
 }
 
+//TimerStorage
+JobDispatcher::TimerStorage::TimerStorage() :
+idBase(0x0000ff00),
+currentId(idBase)
+{
+
+}
+
+void JobDispatcher::TimerStorage::StoreTimer(TimerBase* _timer)
+{
+	//TODO: Ensure ID is unique by looking it up in the timers map
+
+	std::unique_lock<std::mutex> timersMapLock(timerMutex);
+
+	if(currentId > idBase + 100)
+	{
+		currentId = idBase;
+	}
+
+	_timer->SetTimerId(currentId);
+	timers[currentId] = _timer;
+
+	currentId++;
+}
+
+void JobDispatcher::TimerStorage::HandleEvent(const uint32_t _eventNo)
+{
+	std::unique_lock<std::mutex> timersMapLock(timerMutex);
+
+	TimerBaseMap::iterator timerIter = timers.find(_eventNo);
+
+	if(timers.end() != timerIter)
+	{
+		delete timerIter->second;
+		timers.erase(timerIter);
+	}
+}

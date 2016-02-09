@@ -10,6 +10,7 @@
 
 #include <mutex>
 #include <atomic>
+#include <map>
 
 #include "jobbase.h"
 #include "eventlistenerbase.h"
@@ -20,7 +21,7 @@
 #include "threadobject.h"
 
 
-class JobDispatcher : EventListenerBase
+class JobDispatcher
 {
 public:
 	static JobDispatcher* GetApi();
@@ -33,7 +34,7 @@ public:
 
 	void ExecuteJobIn(JobBase* jobPtr, const uint32_t ms);
 
-	void RaiseEventIn(const uint32_t eventNo, const uint32_t ms);
+	void RaiseEventIn(const uint32_t eventNo, const uint32_t ms); //TODO: Implement
 
 	void SubscribeToEvent(const uint32_t eventNo, EventListenerBase* eventListenerPtr);
 
@@ -113,10 +114,16 @@ private:
 	public:
 		virtual ~TimerBase() {}
 
-	private:
+		void SetTimerId(const uint32_t _timerId)
+		{
+			timerId = _timerId;
+		}
+
+	protected:
+		uint32_t timerId;
 	};
 
-	typedef std::vector<TimerBase*> TimerBasePtrVector;
+	typedef std::map<uint32_t, TimerBase*> TimerBaseMap;
 
 	class JobTimer : public TimerBase
 	{
@@ -132,7 +139,21 @@ private:
 		JobBase* jobPtr;
 	};
 
-	void HandleEvent(const uint32_t eventNo);
+	class TimerStorage : public EventListenerBase
+	{
+	public:
+		TimerStorage();
+		void StoreTimer(TimerBase* _timer);
+		void HandleEvent(const uint32_t _eventNo);
+
+	protected:
+
+	private:
+		uint32_t idBase;
+		uint32_t currentId;
+		TimerBaseMap timers;
+		std::mutex timerMutex;
+	};
 
 	std::mutex eventListenersAccessMutex;
 
@@ -148,9 +169,9 @@ private:
 
 	JobQueue jobQueue;
 
-	SubscriberEventMap eventListeners;
+	EventListenersMap eventListeners;
 
-	TimerBasePtrVector timers;
+	TimerStorage timerStorage;
 
 	JobDispatcher();
 	static std::mutex instanceCreationMutex;

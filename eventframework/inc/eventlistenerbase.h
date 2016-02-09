@@ -25,7 +25,7 @@ private:
 
 typedef std::vector<EventListenerBase*> EventListenerBasePtrVector;
 
-typedef std::map<uint32_t, EventListenerBasePtrVector> SubscriberEventMap;
+typedef std::map<uint32_t, EventListenerBasePtrVector> EventListenersMap;
 
 
 #endif /* INC_EVENTLISTENERBASE_H_ */
