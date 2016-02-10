@@ -237,12 +237,19 @@ eventListenerPtr(_eventListenerPtr),
 eventNo(_eventNo),
 eventDataPtr(nullptr)
 {
-	//TODO: Fixme
+	if(nullptr != _eventDataPtr)
+	{
+		eventDataPtr = _eventDataPtr->clone();
+	}
 }
 
 void JobDispatcher::EventJob::Execute()
 {
 	eventListenerPtr->HandleEvent(eventNo, eventDataPtr);
+	if(nullptr != eventDataPtr)
+	{
+		delete eventDataPtr;
+	}
 }
 
 //Worker
@@ -296,19 +303,37 @@ void JobDispatcher::Worker::Stop()
 	}
 }
 
-//JobTimer
-JobDispatcher::JobTimer::JobTimer(JobBase* _jobPtr, const uint32_t _ms) :
+//TimerBase
+JobDispatcher::TimerBase::TimerBase(const uint32_t _ms) :
 ms(_ms),
-jobPtr(_jobPtr)
+timerId(0)
 {
 
 }
 
-void JobDispatcher::JobTimer::run()
+void JobDispatcher::TimerBase::SetTimerId(const uint32_t _timerId)
+{
+	timerId = _timerId;
+}
+
+void JobDispatcher::TimerBase::run()
 {
 	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-	JobDispatcher::GetApi()->ExecuteJob(jobPtr);
+	this->TimerFunction();
 	JobDispatcher::GetApi()->RaiseEvent(timerId);
+}
+
+void JobDispatcher::JobTimer::TimerFunction()
+{
+	JobDispatcher::GetApi()->ExecuteJob(jobPtr);
+}
+
+//JobTimer
+JobDispatcher::JobTimer::JobTimer(JobBase* _jobPtr, const uint32_t _ms) :
+TimerBase(_ms),
+jobPtr(_jobPtr)
+{
+
 }
 
 //TimerStorage

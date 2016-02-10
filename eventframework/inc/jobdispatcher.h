@@ -89,7 +89,7 @@ private:
 
 		const uint32_t eventNo;
 
-		const EventDataBase* eventDataPtr;
+		EventDataBase* eventDataPtr;
 	};
 
 	class Worker : public ThreadObject
@@ -120,15 +120,21 @@ private:
 	class TimerBase : public ThreadObject
 	{
 	public:
+		TimerBase(const uint32_t _ms);
 		virtual ~TimerBase() {}
 
-		void SetTimerId(const uint32_t _timerId)
-		{
-			timerId = _timerId;
-		}
+		void SetTimerId(const uint32_t _timerId);
+
+		void run();
+
+		virtual void TimerFunction() = 0;
 
 	protected:
+		const uint32_t ms;
 		uint32_t timerId;
+
+	private:
+		TimerBase();
 	};
 
 	typedef std::map<uint32_t, TimerBase*> TimerBaseMap;
@@ -138,12 +144,11 @@ private:
 	public:
 		JobTimer(JobBase* _jobPtr, const uint32_t _ms);
 
-		void run();
+		void TimerFunction();
 
 	protected:
 
 	private:
-		const uint32_t ms;
 		JobBase* jobPtr;
 	};
 
