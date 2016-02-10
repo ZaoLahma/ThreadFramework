@@ -12,8 +12,7 @@ JobDispatcher* JobDispatcher::instance = nullptr;
 std::mutex JobDispatcher::instanceCreationMutex;
 
 JobDispatcher::JobDispatcher() :
-executionFinishedNotificationLock(executionFinishedNotificationMutex),
-currentWorkerIndex(0)
+executionFinishedNotificationLock(executionFinishedNotificationMutex)
 {
 	uint32_t noOfCores = std::thread::hardware_concurrency();
 
@@ -61,15 +60,21 @@ void JobDispatcher::DropInstance()
 
 void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 {
+	/*
+	 * Queue job and notify first idling worker (if any)
+	 */
+
 	jobQueue.QueueJob(jobPtr);
 
-	workers[currentWorkerIndex]->Notify();
+	WorkerPtrVector::iterator workerIter = workers.begin();
 
-	currentWorkerIndex++;
-
-	if(currentWorkerIndex == workers.size())
+	for( ; workerIter != workers.end(); ++workerIter)
 	{
-		currentWorkerIndex = 0;
+		if(true == (*workerIter)->IsIdling())
+		{
+			(*workerIter)->Notify();
+			break;
+		}
 	}
 }
 
@@ -135,7 +140,7 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo)
 
 		for( ; eventListenerIter != eventIter->second.end(); ++eventListenerIter)
 		{
-			JobDispatcher::EventJob* eventJob = new JobDispatcher::EventJob(*eventListenerIter, eventNo);
+			JobDispatcher::EventJob* eventJob = new JobDispatcher::EventJob(*eventListenerIter, eventNo, nullptr);
 
 			JobDispatcher::GetApi()->ExecuteJob(eventJob);
 		}
@@ -225,16 +230,19 @@ JobDispatcher::JobQueue::~JobQueue()
  }
 
 //EventJob
-JobDispatcher::EventJob::EventJob(EventListenerBase* _eventListenerPtr, const uint32_t _eventNo) :
+JobDispatcher::EventJob::EventJob(EventListenerBase* _eventListenerPtr,
+		                          const uint32_t _eventNo,
+								  const EventDataBase* _eventDataPtr) :
 eventListenerPtr(_eventListenerPtr),
-eventNo(_eventNo)
+eventNo(_eventNo),
+eventDataPtr(nullptr)
 {
-
+	//TODO: Fixme
 }
 
 void JobDispatcher::EventJob::Execute()
 {
-	eventListenerPtr->HandleEvent(eventNo);
+	eventListenerPtr->HandleEvent(eventNo, eventDataPtr);
 }
 
 //Worker
@@ -265,9 +273,16 @@ void JobDispatcher::Worker::run()
 
 		if(running)
 		{
+			isIdling = true;
 			executionNotification.wait(executionLock);
+			isIdling = false;
 		}
 	}
+}
+
+const bool JobDispatcher::Worker::IsIdling()
+{
+	return isIdling;
 }
 
 void JobDispatcher::Worker::Stop()
@@ -323,8 +338,10 @@ void JobDispatcher::TimerStorage::StoreTimer(TimerBase* _timer)
 	currentId++;
 }
 
-void JobDispatcher::TimerStorage::HandleEvent(const uint32_t _eventNo)
+void JobDispatcher::TimerStorage::HandleEvent(const uint32_t _eventNo, const EventDataBase* _dataPtr)
 {
+	//TODO: Propagate timerId through eventData instead
+
 	JobDispatcher::GetApi()->UnsubscribeToEvent(_eventNo, this);
 
 	std::unique_lock<std::mutex> timersMapLock(timerMutex);

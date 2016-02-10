@@ -76,7 +76,9 @@ private:
 	class EventJob : public JobBase
 	{
 	public:
-		EventJob(EventListenerBase* _eventListenerPtr, const uint32_t _eventNo);
+		EventJob(EventListenerBase* _eventListenerPtr,
+				 const uint32_t _eventNo,
+				 const EventDataBase* _eventDataPtr);
 
 		void Execute();
 	protected:
@@ -86,6 +88,8 @@ private:
 		EventListenerBase* eventListenerPtr;
 
 		const uint32_t eventNo;
+
+		const EventDataBase* eventDataPtr;
 	};
 
 	class Worker : public ThreadObject
@@ -94,6 +98,8 @@ private:
 		Worker(JobQueue* _queuePtr);
 
 		void Notify();
+
+		const bool IsIdling();
 
 		void Stop();
 
@@ -105,6 +111,8 @@ private:
 		std::mutex executionNotificationMutex;
 		std::unique_lock<std::mutex> executionLock;
 		std::condition_variable executionNotification;
+
+		std::atomic<bool> isIdling;
 
 		void run();
 	};
@@ -144,7 +152,7 @@ private:
 	public:
 		TimerStorage();
 		void StoreTimer(TimerBase* _timer);
-		void HandleEvent(const uint32_t _eventNo);
+		void HandleEvent(const uint32_t _eventNo, const EventDataBase* _dataPtr);
 
 	protected:
 
@@ -162,8 +170,6 @@ private:
 	std::condition_variable executionFinishedNotification;
 
 	typedef std::vector<Worker*> WorkerPtrVector;
-
-	uint32_t currentWorkerIndex;
 
 	WorkerPtrVector workers;
 

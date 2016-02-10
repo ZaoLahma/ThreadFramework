@@ -19,7 +19,7 @@ class WordFinder : public EventListenerBase
 public:
 	WordFinder(const std::string& string, const std::string& wordToFind, const uint32_t _instanceNo);
 
-	void HandleEvent(const uint32_t eventNo);
+	void HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr);
 
 private:
 	WordFinder();

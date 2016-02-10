@@ -11,11 +11,20 @@
 #include <vector>
 #include <map>
 
+class EventDataBase
+{
+public:
+	virtual ~EventDataBase() {}
+protected:
+
+public:
+};
+
 class EventListenerBase
 {
 public:
 	virtual ~EventListenerBase() {}
-	virtual void HandleEvent(const uint32_t eventNo) = 0;
+	virtual void HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr) = 0;
 
 protected:
 
