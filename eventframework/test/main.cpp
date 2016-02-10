@@ -49,7 +49,7 @@ int main(void)
 	 * the framework to process the word finding jobs...
 	 *
 	 * Normally the end of the execution would be triggered by an external
-	 * event
+	 * event for example triggered by a window manager
 	 */
 	EndExecutionJob* endExecutionJobPtr = new EndExecutionJob();
 	const uint32_t msToSleep = 300;

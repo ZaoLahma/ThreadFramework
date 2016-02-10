@@ -25,23 +25,25 @@
 class JobDispatcher
 {
 public:
-	static JobDispatcher* GetApi();
-
 	static void DropInstance();
 
 	virtual ~JobDispatcher();
 
+	//Main access point
+	static JobDispatcher* GetApi();
+
+	//API
 	void ExecuteJob(JobBase* jobPtr);
 
 	void ExecuteJobIn(JobBase* jobPtr, const uint32_t ms);
-
-	void RaiseEventIn(const uint32_t eventNo, const EventDataBase* eventDataPtr, const uint32_t ms);
 
 	void SubscribeToEvent(const uint32_t eventNo, EventListenerBase* eventListenerPtr);
 
 	void UnsubscribeToEvent(const uint32_t eventNo, EventListenerBase* eventListenerPtr);
 
 	void RaiseEvent(const uint32_t eventNo, const EventDataBase* eventDataPtr);
+
+	void RaiseEventIn(const uint32_t eventNo, const EventDataBase* eventDataPtr, const uint32_t ms);
 
 	void WaitForExecutionFinished();
 
@@ -50,6 +52,7 @@ public:
 protected:
 
 private:
+	//Helper class definitions
 	class JobQueue
 	{
 	public:
@@ -202,6 +205,7 @@ private:
 		std::mutex timerMutex;
 	};
 
+	//Private attrbutes
 	std::mutex eventListenersAccessMutex;
 
 	std::mutex executionFinishedNotificationMutex;
@@ -221,7 +225,6 @@ private:
 	JobDispatcher();
 	static std::mutex instanceCreationMutex;
 	static JobDispatcher* instance;
-
 };
 
 
