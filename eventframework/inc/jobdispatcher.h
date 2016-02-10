@@ -20,6 +20,7 @@
 #include <condition_variable>
 #include "threadobject.h"
 
+#define TIMEOUT_EVENT_ID 0x0 //Move me to appropriate place
 
 class JobDispatcher
 {
@@ -40,7 +41,7 @@ public:
 
 	void UnsubscribeToEvent(const uint32_t eventNo, EventListenerBase* eventListenerPtr);
 
-	void RaiseEvent(const uint32_t eventNo);
+	void RaiseEvent(const uint32_t eventNo, const EventDataBase* eventDataPtr);
 
 	void WaitForExecutionFinished();
 
@@ -117,6 +118,22 @@ private:
 		void run();
 	};
 
+	class TimerEventData : public EventDataBase
+	{
+	public:
+		TimerEventData(const uint32_t);
+
+		EventDataBase* clone() const;
+
+		const uint32_t GetTimerId() const;
+
+	protected:
+
+	private:
+		const uint32_t timerId;
+		TimerEventData();
+	};
+
 	class TimerBase : public ThreadObject
 	{
 	public:
@@ -162,6 +179,7 @@ private:
 	protected:
 
 	private:
+		std::atomic<bool> subscribedToEvent;
 		uint32_t idBase;
 		uint32_t currentId;
 		TimerBaseMap timers;

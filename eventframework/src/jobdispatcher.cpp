@@ -128,7 +128,7 @@ void JobDispatcher::UnsubscribeToEvent(uint32_t eventNo, EventListenerBase* even
 	}
 }
 
-void JobDispatcher::RaiseEvent(uint32_t eventNo)
+void JobDispatcher::RaiseEvent(uint32_t eventNo, const EventDataBase* eventDataPtr)
 {
 	std::lock_guard<std::mutex> subscribersLock(eventListenersAccessMutex);
 
@@ -140,10 +140,12 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo)
 
 		for( ; eventListenerIter != eventIter->second.end(); ++eventListenerIter)
 		{
-			JobDispatcher::EventJob* eventJob = new JobDispatcher::EventJob(*eventListenerIter, eventNo, nullptr);
+			JobDispatcher::EventJob* eventJob = new JobDispatcher::EventJob(*eventListenerIter, eventNo, eventDataPtr);
 
 			JobDispatcher::GetApi()->ExecuteJob(eventJob);
 		}
+		delete eventDataPtr;
+		eventDataPtr = nullptr;
 	}
 }
 
@@ -303,6 +305,23 @@ void JobDispatcher::Worker::Stop()
 	}
 }
 
+//TimerEventData
+JobDispatcher::TimerEventData::TimerEventData(const uint32_t _timerId) :
+timerId(_timerId)
+{
+
+}
+
+const uint32_t JobDispatcher::TimerEventData::GetTimerId() const
+{
+	return timerId;
+}
+
+EventDataBase* JobDispatcher::TimerEventData::clone() const
+{
+	return new TimerEventData(*this);
+}
+
 //TimerBase
 JobDispatcher::TimerBase::TimerBase(const uint32_t _ms) :
 ms(_ms),
@@ -320,7 +339,9 @@ void JobDispatcher::TimerBase::run()
 {
 	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 	this->TimerFunction();
-	JobDispatcher::GetApi()->RaiseEvent(timerId);
+	//TODO: Create timer event data
+	TimerEventData* eventDataPtr = new TimerEventData(timerId);
+	JobDispatcher::GetApi()->RaiseEvent(TIMEOUT_EVENT_ID, eventDataPtr);
 }
 
 void JobDispatcher::JobTimer::TimerFunction()
@@ -338,6 +359,7 @@ jobPtr(_jobPtr)
 
 //TimerStorage
 JobDispatcher::TimerStorage::TimerStorage() :
+subscribedToEvent(false),
 idBase(0x0000ff00),
 currentId(idBase)
 {
@@ -346,6 +368,17 @@ currentId(idBase)
 
 void JobDispatcher::TimerStorage::StoreTimer(TimerBase* _timer)
 {
+	if(false == subscribedToEvent)
+	{
+		/*
+		 *Can't do this in the CTOR due to it
+		 *trying to create another JobDispatcher
+		 *instance
+		 */
+		subscribedToEvent = true;
+		JobDispatcher::GetApi()->SubscribeToEvent(TIMEOUT_EVENT_ID, this);
+	}
+
 	//TODO: Ensure ID is unique by looking it up in the timers map
 
 	std::unique_lock<std::mutex> timersMapLock(timerMutex);
@@ -355,7 +388,6 @@ void JobDispatcher::TimerStorage::StoreTimer(TimerBase* _timer)
 		currentId = idBase;
 	}
 
-	JobDispatcher::GetApi()->SubscribeToEvent(currentId, this);
 	_timer->SetTimerId(currentId);
 	timers[currentId] = _timer;
 	_timer->Start();
@@ -365,13 +397,11 @@ void JobDispatcher::TimerStorage::StoreTimer(TimerBase* _timer)
 
 void JobDispatcher::TimerStorage::HandleEvent(const uint32_t _eventNo, const EventDataBase* _dataPtr)
 {
-	//TODO: Propagate timerId through eventData instead
-
-	JobDispatcher::GetApi()->UnsubscribeToEvent(_eventNo, this);
+	const TimerEventData* eventDataPtr = static_cast<const TimerEventData*>(_dataPtr);
 
 	std::unique_lock<std::mutex> timersMapLock(timerMutex);
 
-	TimerBaseMap::iterator timerIter = timers.find(_eventNo);
+	TimerBaseMap::iterator timerIter = timers.find(eventDataPtr->GetTimerId());
 
 	if(timers.end() != timerIter)
 	{

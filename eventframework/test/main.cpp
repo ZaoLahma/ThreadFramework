@@ -8,6 +8,8 @@
 #include "wordfinder.h"
 #include "jobbase.h"
 
+#include <iostream>
+
 class EndExecutionJob : public JobBase
 {
 public:
@@ -40,7 +42,6 @@ int main(void)
 	WordFinder wf_4("There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel.",
 			        "parallel",
 					instanceNo++);
-
 
 	/*
 	 * Just as an example I will let this particular program be ended by a

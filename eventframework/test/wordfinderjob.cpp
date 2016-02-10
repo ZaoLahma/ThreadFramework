@@ -39,5 +39,5 @@ void WordFinderJob::Execute()
 		pos = wordFinderDataPtr->wordString.find(wordFinderDataPtr->wordToFind, pos + 1);
 	}
 
-	JobDispatcher::GetApi()->RaiseEvent(WORD_FINDER_JOB_FINISHED + instanceNo);
+	JobDispatcher::GetApi()->RaiseEvent(WORD_FINDER_JOB_FINISHED + instanceNo, nullptr);
 }
