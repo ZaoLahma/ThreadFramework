@@ -149,6 +149,14 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo, const EventDataBase* eventDataP
 	}
 }
 
+void JobDispatcher::RaiseEventIn(const uint32_t eventNo, const EventDataBase* eventDataPtr, const uint32_t ms)
+{
+	JobDispatcher::EventTimer* eventTimerPtr = new JobDispatcher::EventTimer(eventNo, eventDataPtr, ms);
+
+	timerStorage.StoreTimer(eventTimerPtr);
+}
+
+
 void JobDispatcher::WaitForExecutionFinished()
 {
 	executionFinishedNotification.wait(executionFinishedNotificationLock);
