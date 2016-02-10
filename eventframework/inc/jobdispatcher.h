@@ -35,7 +35,7 @@ public:
 
 	void ExecuteJobIn(JobBase* jobPtr, const uint32_t ms);
 
-	void RaiseEventIn(const uint32_t eventNo, const uint32_t ms); //TODO: Implement
+	void RaiseEventIn(const uint32_t eventNo, const EventDataBase* eventDataPtr, const uint32_t ms); //TODO: Implement
 
 	void SubscribeToEvent(const uint32_t eventNo, EventListenerBase* eventListenerPtr);
 
@@ -166,7 +166,23 @@ private:
 	protected:
 
 	private:
+		JobTimer();
 		JobBase* jobPtr;
+	};
+
+	class EventTimer : public TimerBase
+	{
+	public:
+		EventTimer(const uint32_t eventNo, const EventDataBase* _dataPtr, const uint32_t _ms);
+
+		void TimerFunction();
+
+	protected:
+
+	private:
+		EventTimer();
+		const uint32_t eventNo;
+		const EventDataBase* eventDataPtr;
 	};
 
 	class TimerStorage : public EventListenerBase

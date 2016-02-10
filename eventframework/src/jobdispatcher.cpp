@@ -344,17 +344,31 @@ void JobDispatcher::TimerBase::run()
 	JobDispatcher::GetApi()->RaiseEvent(TIMEOUT_EVENT_ID, eventDataPtr);
 }
 
-void JobDispatcher::JobTimer::TimerFunction()
-{
-	JobDispatcher::GetApi()->ExecuteJob(jobPtr);
-}
-
 //JobTimer
 JobDispatcher::JobTimer::JobTimer(JobBase* _jobPtr, const uint32_t _ms) :
 TimerBase(_ms),
 jobPtr(_jobPtr)
 {
 
+}
+
+void JobDispatcher::JobTimer::TimerFunction()
+{
+	JobDispatcher::GetApi()->ExecuteJob(jobPtr);
+}
+
+//EventTimer
+JobDispatcher::EventTimer::EventTimer(const uint32_t _eventNo, const EventDataBase* _dataPtr, const uint32_t _ms) :
+TimerBase(_ms),
+eventNo(_eventNo),
+eventDataPtr(_dataPtr)
+{
+
+}
+
+void JobDispatcher::EventTimer::TimerFunction()
+{
+	JobDispatcher::GetApi()->RaiseEvent(eventNo, eventDataPtr);
 }
 
 //TimerStorage
