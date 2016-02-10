@@ -35,7 +35,7 @@ public:
 
 	void ExecuteJobIn(JobBase* jobPtr, const uint32_t ms);
 
-	void RaiseEventIn(const uint32_t eventNo, const EventDataBase* eventDataPtr, const uint32_t ms); //TODO: Implement
+	void RaiseEventIn(const uint32_t eventNo, const EventDataBase* eventDataPtr, const uint32_t ms);
 
 	void SubscribeToEvent(const uint32_t eventNo, EventListenerBase* eventListenerPtr);
 
