@@ -16,6 +16,18 @@
 
 #define WORD_FINDER_JOB_FINISHED 0x00000001
 
+class WordFinderJobFinishedEventData : public EventDataBase
+{
+public:
+	EventDataBase* clone() const;
+	uint32_t instanceId;
+
+protected:
+
+private:
+
+};
+
 class WordFinderData : public JobDataBase
 {
 public:
