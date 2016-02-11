@@ -11,6 +11,7 @@
 #include <mutex>
 #include <atomic>
 #include <map>
+#include <cinttypes>
 
 #include "jobbase.h"
 #include "eventlistenerbase.h"

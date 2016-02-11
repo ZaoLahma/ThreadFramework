@@ -7,6 +7,7 @@
 
 #include "jobdispatcher.h"
 #include <iostream>
+#include <thread>
 
 JobDispatcher* JobDispatcher::instance = nullptr;
 std::mutex JobDispatcher::instanceCreationMutex;
@@ -70,7 +71,7 @@ void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 
 	for( ; workerIter != workers.end(); ++workerIter)
 	{
-		if(true == (*workerIter)->IsIdling())
+		if((*workerIter)->IsIdling())
 		{
 			(*workerIter)->Notify();
 			break;
@@ -266,7 +267,8 @@ void JobDispatcher::EventJob::Execute()
 
 JobDispatcher::Worker::Worker(JobQueue* _queuePtr) :
 queuePtr(_queuePtr),
-executionLock(executionNotificationMutex)
+executionLock(executionNotificationMutex),
+isIdling(true)
 {
 
 }
