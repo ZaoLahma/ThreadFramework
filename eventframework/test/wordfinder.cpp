@@ -27,12 +27,15 @@ instanceNo(_instanceNo)
 
 void WordFinder::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr)
 {
-	const WordFinderJobFinishedEventData* eventDataPtr = static_cast<const WordFinderJobFinishedEventData*>(dataPtr);
-
-	if(eventDataPtr->instanceId == instanceNo)
+	if(WORD_FINDER_JOB_FINISHED == eventNo)
 	{
-		JobDispatcher::GetApi()->UnsubscribeToEvent(WORD_FINDER_JOB_FINISHED, this);
-		std::lock_guard<std::mutex> printLock(instanceMutex);
-		std::cout<<"String: "<<jobData.wordString<<". Word: "<<jobData.wordToFind<<". No of occurances: "<<jobData.noOfOccurances<<std::endl;
+		const WordFinderJobFinishedEventData* eventDataPtr = static_cast<const WordFinderJobFinishedEventData*>(dataPtr);
+
+		if(eventDataPtr->instanceId == instanceNo)
+		{
+			JobDispatcher::GetApi()->UnsubscribeToEvent(WORD_FINDER_JOB_FINISHED, this);
+			std::lock_guard<std::mutex> printLock(instanceMutex);
+			std::cout<<"String: "<<jobData.wordString<<". Word: "<<jobData.wordToFind<<". No of occurances: "<<jobData.noOfOccurances<<std::endl;
+		}
 	}
 }

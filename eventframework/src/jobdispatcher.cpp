@@ -268,7 +268,7 @@ void JobDispatcher::EventJob::Execute()
 JobDispatcher::Worker::Worker(JobQueue* _queuePtr) :
 queuePtr(_queuePtr),
 executionLock(executionNotificationMutex),
-isIdling(true)
+isIdling(false)
 {
 
 }
@@ -299,7 +299,7 @@ void JobDispatcher::Worker::run()
 	}
 }
 
-const bool JobDispatcher::Worker::IsIdling()
+bool JobDispatcher::Worker::IsIdling()
 {
 	return isIdling;
 }
@@ -322,7 +322,7 @@ timerId(_timerId)
 
 }
 
-const uint32_t JobDispatcher::TimerEventData::GetTimerId() const
+uint32_t JobDispatcher::TimerEventData::GetTimerId() const
 {
 	return timerId;
 }
@@ -421,15 +421,19 @@ void JobDispatcher::TimerStorage::StoreTimer(TimerBase* _timer)
 
 void JobDispatcher::TimerStorage::HandleEvent(const uint32_t _eventNo, const EventDataBase* _dataPtr)
 {
-	const TimerEventData* eventDataPtr = static_cast<const TimerEventData*>(_dataPtr);
-
-	std::unique_lock<std::mutex> timersMapLock(timerMutex);
-
-	TimerBaseMap::iterator timerIter = timers.find(eventDataPtr->GetTimerId());
-
-	if(timers.end() != timerIter)
+	if(TIMEOUT_EVENT_ID == _eventNo)
 	{
-		delete timerIter->second;
-		timers.erase(timerIter);
+		const TimerEventData* eventDataPtr = static_cast<const TimerEventData*>(_dataPtr);
+
+		std::unique_lock<std::mutex> timersMapLock(timerMutex);
+
+		TimerBaseMap::iterator timerIter = timers.find(eventDataPtr->GetTimerId());
+
+		if(timers.end() != timerIter)
+		{
+			delete timerIter->second;
+			timers.erase(timerIter);
+		}
 	}
+
 }

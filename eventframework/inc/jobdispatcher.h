@@ -104,7 +104,7 @@ private:
 
 		void Notify();
 
-		const bool IsIdling();
+		bool IsIdling();
 
 		void Stop();
 
@@ -129,7 +129,7 @@ private:
 
 		EventDataBase* clone() const;
 
-		const uint32_t GetTimerId() const;
+		uint32_t GetTimerId() const;
 
 	protected:
 
