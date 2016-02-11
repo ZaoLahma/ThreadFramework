@@ -1,5 +1,5 @@
 CCOMMAND = g++
-CFLAGS = -std=c++11
+CFLAGS = -std=c++11 -lpthread
 LINKARGS = 
 SRC_FILES = ./src/*.cpp ./test/*.cpp
 INC_DIRS = ./inc
