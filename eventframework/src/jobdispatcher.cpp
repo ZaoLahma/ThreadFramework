@@ -398,6 +398,18 @@ currentId(idBase)
 
 }
 
+JobDispatcher::TimerStorage::~TimerStorage()
+{
+	TimerBaseMap::iterator timerIter = timers.begin();
+
+	for( ; timerIter != timers.end(); ++timerIter)
+	{
+		delete timerIter->second;
+	}
+
+	timers.clear();
+}
+
 void JobDispatcher::TimerStorage::StoreTimer(TimerBase* _timer)
 {
 	if(false == subscribedToEvent)

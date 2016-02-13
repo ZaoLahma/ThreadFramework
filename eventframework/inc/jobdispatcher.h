@@ -178,7 +178,6 @@ private:
 	{
 	public:
 		EventTimer(const uint32_t eventNo, const EventDataBase* _dataPtr, const uint32_t _ms);
-
 		void TimerFunction();
 
 	protected:
@@ -193,6 +192,7 @@ private:
 	{
 	public:
 		TimerStorage();
+		~TimerStorage();
 		void StoreTimer(TimerBase* _timer);
 		void HandleEvent(const uint32_t _eventNo, const EventDataBase* _dataPtr);
 
