@@ -199,7 +199,7 @@ private:
 	protected:
 
 	private:
-		std::atomic<bool> subscribedToEvent;
+		bool subscribedToEvent;
 		std::mutex subscribeMutex;
 		uint32_t idBase;
 		uint32_t currentId;
