@@ -209,6 +209,8 @@ private:
 	//Private attrbutes
 	uint32_t noOfCores;
 
+	std::mutex workerCreationMutex;
+
 	std::mutex eventListenersAccessMutex;
 
 	std::mutex executionFinishedNotificationMutex;

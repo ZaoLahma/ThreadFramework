@@ -78,6 +78,7 @@ void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 	 * The framework will adjust upwards to the worst
 	 * case, but never downwards.
 	 */
+	std::lock_guard<std::mutex> workerCreationLock(workerCreationMutex);
 	Worker* worker = new Worker(&jobQueue);
 	worker->Start();
 	workers.push_back(worker);
