@@ -13,20 +13,16 @@ JobDispatcher* JobDispatcher::instance = nullptr;
 std::mutex JobDispatcher::instanceCreationMutex;
 
 JobDispatcher::JobDispatcher() :
+noOfCores(std::thread::hardware_concurrency()),
 executionFinishedNotificationLock(executionFinishedNotificationMutex)
 {
-	uint32_t noOfCores = std::thread::hardware_concurrency();
 
-	for(uint32_t i = 0; i < noOfCores; ++i)
-	{
-		Worker* worker = new Worker(&jobQueue);
-		worker->Start();
-		workers.push_back(worker);
-	}
 }
 
 JobDispatcher::~JobDispatcher()
 {
+	std::cout<<"JobDispatcher::DTOR called. No of workers: "<<workers.size()<<std::endl;
+
 	WorkerPtrVector::iterator workerIter = workers.begin();
 
 	for( ; workerIter != workers.end(); ++workerIter)
@@ -64,7 +60,6 @@ void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 	/*
 	 * Queue job and notify first idling worker (if any)
 	 */
-
 	jobQueue.QueueJob(jobPtr);
 
 	WorkerPtrVector::iterator workerIter = workers.begin();
@@ -74,9 +69,18 @@ void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 		if((*workerIter)->IsIdling())
 		{
 			(*workerIter)->Notify();
-			break;
+			return;
 		}
 	}
+
+	/*
+	 * If no idling worker found, we allocate a new one.
+	 * The framework will adjust upwards to the worst
+	 * case, but never downwards.
+	 */
+	Worker* worker = new Worker(&jobQueue);
+	worker->Start();
+	workers.push_back(worker);
 }
 
 void JobDispatcher::ExecuteJobIn(JobBase* jobPtr, const uint32_t ms)
