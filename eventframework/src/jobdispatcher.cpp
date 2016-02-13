@@ -353,8 +353,11 @@ void JobDispatcher::TimerBase::SetTimerId(const uint32_t _timerId)
 void JobDispatcher::TimerBase::run()
 {
 	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+
+	//Execute this particular timer type's function
 	this->TimerFunction();
-	//TODO: Create timer event data
+
+	//Notify timer triggered
 	TimerEventData* eventDataPtr = new TimerEventData(timerId);
 	JobDispatcher::GetApi()->RaiseEvent(TIMEOUT_EVENT_ID, eventDataPtr);
 }
@@ -400,28 +403,41 @@ void JobDispatcher::TimerStorage::StoreTimer(TimerBase* _timer)
 	if(false == subscribedToEvent)
 	{
 		/*
-		 *Can't do this in the CTOR due to it
-		 *trying to create another JobDispatcher
-		 *instance
+		 *Can't do the subscription in the CTOR
+		 *due to it trying to create another
+		 *JobDispatcher instance
 		 */
-		subscribedToEvent = true;
-		JobDispatcher::GetApi()->SubscribeToEvent(TIMEOUT_EVENT_ID, this);
+		subscribeMutex.lock();
+		if(false == subscribedToEvent)
+		{
+			subscribedToEvent = true;
+			JobDispatcher::GetApi()->SubscribeToEvent(TIMEOUT_EVENT_ID, this);
+		}
+		subscribeMutex.unlock();
 	}
-
-	//TODO: Ensure ID is unique by looking it up in the timers map
 
 	std::unique_lock<std::mutex> timersMapLock(timerMutex);
 
-	if(currentId > idBase + 100)
+	const uint8_t MAX_NO_OF_TIMERS = 255;
+
+	while(timers.find(currentId) != timers.end())
 	{
-		currentId = idBase;
+		/*
+		 * If more than MAX_NO_OF_TIMERS timers are running
+		 * the function will be stuck in this loop until
+		 * one has triggered and its ID has been freed.
+		 */
+		if(currentId > idBase + MAX_NO_OF_TIMERS)
+		{
+			currentId = idBase;
+		}
+
+		currentId++;
 	}
 
 	_timer->SetTimerId(currentId);
 	timers[currentId] = _timer;
 	_timer->Start();
-
-	currentId++;
 }
 
 void JobDispatcher::TimerStorage::HandleEvent(const uint32_t _eventNo, const EventDataBase* _dataPtr)
