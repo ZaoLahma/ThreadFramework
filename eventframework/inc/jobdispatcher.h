@@ -201,8 +201,6 @@ private:
 	private:
 		bool subscribedToEvent;
 		std::mutex subscribeMutex;
-		uint32_t idBase;
-		uint32_t currentId;
 		TimerBaseMap timers;
 		std::mutex timerMutex;
 	};

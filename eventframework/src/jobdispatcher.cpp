@@ -6,6 +6,7 @@
  */
 
 #include "jobdispatcher.h"
+#include "uniqueidprovider.h"
 #include <iostream>
 #include <thread>
 
@@ -391,9 +392,7 @@ void JobDispatcher::EventTimer::TimerFunction()
 
 //TimerStorage
 JobDispatcher::TimerStorage::TimerStorage() :
-subscribedToEvent(false),
-idBase(0x0000ff00),
-currentId(idBase)
+subscribedToEvent(false)
 {
 
 }
@@ -428,27 +427,11 @@ void JobDispatcher::TimerStorage::StoreTimer(TimerBase* _timer)
 		subscribeMutex.unlock();
 	}
 
+	const uint32_t timerId = UniqueIdProvider::GetApi()->GetUniqueId();
+
+	_timer->SetTimerId(timerId);
 	std::unique_lock<std::mutex> timersMapLock(timerMutex);
-
-	const uint8_t MAX_NO_OF_TIMERS = 255;
-
-	while(timers.find(currentId) != timers.end())
-	{
-		/*
-		 * If more than MAX_NO_OF_TIMERS timers are running
-		 * the function will be stuck in this loop until
-		 * one has triggered and its ID has been freed.
-		 */
-		if(currentId > idBase + MAX_NO_OF_TIMERS)
-		{
-			currentId = idBase;
-		}
-
-		currentId++;
-	}
-
-	_timer->SetTimerId(currentId);
-	timers[currentId] = _timer;
+	timers[timerId] = _timer;
 	_timer->Start();
 }
 
