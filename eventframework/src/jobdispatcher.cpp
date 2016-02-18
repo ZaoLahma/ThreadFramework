@@ -355,12 +355,15 @@ void JobDispatcher::TimerBase::run()
 {
 	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 
-	//Execute this particular timer type's function
-	this->TimerFunction();
+	if(running)
+	{
+		//Execute this particular timer type's function
+		this->TimerFunction();
 
-	//Notify timer triggered
-	TimerEventData* eventDataPtr = new TimerEventData(timerId);
-	JobDispatcher::GetApi()->RaiseEvent(TIMEOUT_EVENT_ID, eventDataPtr);
+		//Notify timer triggered
+		TimerEventData* eventDataPtr = new TimerEventData(timerId);
+		JobDispatcher::GetApi()->RaiseEvent(TIMEOUT_EVENT_ID, eventDataPtr);
+	}
 }
 
 //JobTimer
