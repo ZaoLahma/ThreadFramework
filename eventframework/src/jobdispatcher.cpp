@@ -96,25 +96,36 @@ void JobDispatcher::SubscribeToEvent(uint32_t eventNo, EventListenerBase* eventL
 {
 	std::lock_guard<std::mutex> subscribersLock(eventListenersAccessMutex);
 
-	EventListenersMap::iterator eventIter = eventListeners.find(eventNo);
+	EventNoToEventListenersMap::iterator eventIter = eventEventListeners.find(eventNo);
 
-	if(eventListeners.end() == eventIter)
+	if(eventEventListeners.end() == eventIter)
 	{
 		EventListenerBasePtrVector newElement;
-		eventListeners[eventNo] = newElement;
-		eventIter = eventListeners.find(eventNo);
+		eventEventListeners[eventNo] = newElement;
+		eventIter = eventEventListeners.find(eventNo);
 	}
 
 	eventIter->second.push_back(eventListenerPtr);
+
+	EventListenerToEventNoMap::iterator eventListenerIter = eventListenersEvents.begin();
+
+	if(eventListenersEvents.end() == eventListenerIter)
+	{
+		std::vector<uint32_t> eventsVector;
+		eventListenersEvents[eventListenerPtr] = eventsVector;
+		eventListenerIter = eventListenersEvents.begin();
+	}
+
+	eventListenerIter->second.push_back(eventNo);
 }
 
 void JobDispatcher::UnsubscribeToEvent(uint32_t eventNo, EventListenerBase* eventListenerPtr)
 {
 	std::lock_guard<std::mutex> subscribersLock(eventListenersAccessMutex);
 
-	EventListenersMap::iterator eventIter = eventListeners.find(eventNo);
+	EventNoToEventListenersMap::iterator eventIter = eventEventListeners.find(eventNo);
 
-	if(eventListeners.end() != eventIter)
+	if(eventEventListeners.end() != eventIter)
 	{
 		EventListenerBasePtrVector::iterator eventListenersIter = eventIter->second.begin();
 
@@ -126,12 +137,52 @@ void JobDispatcher::UnsubscribeToEvent(uint32_t eventNo, EventListenerBase* even
 
 				if(0 == eventIter->second.size())
 				{
-					eventListeners.erase(eventIter);
+					eventEventListeners.erase(eventIter);
 				}
 
 				break;
 			}
 		}
+	}
+
+	EventListenerToEventNoMap::iterator eventListenerIter = eventListenersEvents.find(eventListenerPtr);
+
+	if(eventListenersEvents.end() != eventListenerIter)
+	{
+		std::vector<uint32_t>::iterator eventNoIter = eventListenerIter->second.begin();
+
+		for( ; eventNoIter != eventListenerIter->second.end(); ++eventNoIter)
+		{
+			if(*eventNoIter == eventNo)
+			{
+				eventListenerIter->second.erase(eventNoIter);
+
+				if(0 == eventListenerIter->second.size())
+				{
+					eventListenersEvents.erase(eventListenerIter);
+				}
+			}
+		}
+	}
+}
+
+void JobDispatcher::UnsubscribeToAllEvents(EventListenerBase* eventListenerPtr)
+{
+	std::cout<<"Unsubscribing to all events"<<std::endl;
+	EventListenerToEventNoMap::iterator eventListenerIter = eventListenersEvents.find(eventListenerPtr);
+
+	while(eventListenersEvents.end() != eventListenerIter)
+	{
+		std::vector<uint32_t>::iterator eventNoIter = eventListenerIter->second.begin();
+
+		while(eventNoIter != eventListenerIter->second.end())
+		{
+			std::cout<<"Unsubscribing to event: "<<*eventNoIter<<std::endl;
+			this->UnsubscribeToEvent(*eventNoIter, eventListenerPtr);
+			eventNoIter = eventListenerIter->second.begin();
+		}
+
+		eventListenerIter = eventListenersEvents.find(eventListenerPtr);
 	}
 }
 
@@ -139,9 +190,9 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo, const EventDataBase* eventDataP
 {
 	std::lock_guard<std::mutex> subscribersLock(eventListenersAccessMutex);
 
-	EventListenersMap::iterator eventIter = eventListeners.find(eventNo);
+	EventNoToEventListenersMap::iterator eventIter = eventEventListeners.find(eventNo);
 
-	if(eventListeners.end() != eventIter)
+	if(eventEventListeners.end() != eventIter)
 	{
 		EventListenerBasePtrVector::iterator eventListenerIter = eventIter->second.begin();
 

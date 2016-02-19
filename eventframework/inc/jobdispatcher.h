@@ -42,6 +42,8 @@ public:
 
 	void UnsubscribeToEvent(const uint32_t eventNo, EventListenerBase* eventListenerPtr);
 
+	void UnsubscribeToAllEvents(EventListenerBase* eventListenerPtr);
+
 	void RaiseEvent(const uint32_t eventNo, const EventDataBase* eventDataPtr);
 
 	void RaiseEventIn(const uint32_t eventNo, const EventDataBase* eventDataPtr, const uint32_t ms);
@@ -222,7 +224,8 @@ private:
 
 	JobQueue jobQueue;
 
-	EventListenersMap eventListeners;
+	EventNoToEventListenersMap eventEventListeners;
+	EventListenerToEventNoMap eventListenersEvents;
 
 	TimerStorage timerStorage;
 
