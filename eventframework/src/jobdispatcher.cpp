@@ -26,10 +26,13 @@ JobDispatcher::~JobDispatcher()
 
 	WorkerPtrVector::iterator workerIter = workers.begin();
 
+	uint32_t index = 0;
 	for( ; workerIter != workers.end(); ++workerIter)
 	{
+		std::cout<<"Worker: "<<index<<" executed "<<(*workerIter)->GetNoOfJobsExecuted()<<" jobs."<<std::endl;
 		(*workerIter)->Stop();
 		delete (*workerIter);
+		index++;
 	}
 
 	workers.clear();
@@ -323,6 +326,7 @@ void JobDispatcher::EventJob::Execute()
 //Worker
 
 JobDispatcher::Worker::Worker(JobQueue* _queuePtr) :
+noOfJobsExecuted(0),
 queuePtr(_queuePtr),
 executionLock(executionNotificationMutex),
 isIdling(false)
@@ -343,6 +347,7 @@ void JobDispatcher::Worker::run()
 		while(jobPtr != nullptr)
 		{
 			jobPtr->Execute();
+			noOfJobsExecuted++;
 			delete jobPtr;
 			jobPtr = queuePtr->GetNextJob();
 		}
@@ -359,6 +364,11 @@ void JobDispatcher::Worker::run()
 bool JobDispatcher::Worker::IsIdling()
 {
 	return isIdling;
+}
+
+uint32_t JobDispatcher::Worker::GetNoOfJobsExecuted()
+{
+	return noOfJobsExecuted;
 }
 
 void JobDispatcher::Worker::Stop()

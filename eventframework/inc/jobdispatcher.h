@@ -108,12 +108,15 @@ private:
 
 		bool IsIdling();
 
+		uint32_t GetNoOfJobsExecuted();
+
 		void Stop();
 
 	protected:
 
 	private:
 		Worker();
+		uint32_t noOfJobsExecuted;
 		JobQueue* queuePtr;
 		std::mutex executionNotificationMutex;
 		std::unique_lock<std::mutex> executionLock;
