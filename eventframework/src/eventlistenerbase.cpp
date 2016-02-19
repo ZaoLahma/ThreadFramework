@@ -10,5 +10,5 @@
 
 EventListenerBase::~EventListenerBase()
 {
-	JobDispatcher::GetApi()->UnsubscribeToAllEvents(this);
+
 }

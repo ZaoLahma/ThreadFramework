@@ -110,7 +110,7 @@ void JobDispatcher::SubscribeToEvent(uint32_t eventNo, EventListenerBase* eventL
 
 	eventIter->second.push_back(eventListenerPtr);
 
-	EventListenerToEventNoMap::iterator eventListenerIter = eventListenersEvents.begin();
+	EventListenerToEventNoMap::iterator eventListenerIter = eventListenersEvents.find(eventListenerPtr);
 
 	if(eventListenersEvents.end() == eventListenerIter)
 	{
@@ -146,46 +146,6 @@ void JobDispatcher::UnsubscribeToEvent(uint32_t eventNo, EventListenerBase* even
 				break;
 			}
 		}
-	}
-
-	EventListenerToEventNoMap::iterator eventListenerIter = eventListenersEvents.find(eventListenerPtr);
-
-	if(eventListenersEvents.end() != eventListenerIter)
-	{
-		std::vector<uint32_t>::iterator eventNoIter = eventListenerIter->second.begin();
-
-		for( ; eventNoIter != eventListenerIter->second.end(); ++eventNoIter)
-		{
-			if(*eventNoIter == eventNo)
-			{
-				eventListenerIter->second.erase(eventNoIter);
-
-				if(0 == eventListenerIter->second.size())
-				{
-					eventListenersEvents.erase(eventListenerIter);
-				}
-			}
-		}
-	}
-}
-
-void JobDispatcher::UnsubscribeToAllEvents(EventListenerBase* eventListenerPtr)
-{
-	std::cout<<"Unsubscribing to all events"<<std::endl;
-	EventListenerToEventNoMap::iterator eventListenerIter = eventListenersEvents.find(eventListenerPtr);
-
-	while(eventListenersEvents.end() != eventListenerIter)
-	{
-		std::vector<uint32_t>::iterator eventNoIter = eventListenerIter->second.begin();
-
-		while(eventNoIter != eventListenerIter->second.end())
-		{
-			std::cout<<"Unsubscribing to event: "<<*eventNoIter<<std::endl;
-			this->UnsubscribeToEvent(*eventNoIter, eventListenerPtr);
-			eventNoIter = eventListenerIter->second.begin();
-		}
-
-		eventListenerIter = eventListenersEvents.find(eventListenerPtr);
 	}
 }
 
