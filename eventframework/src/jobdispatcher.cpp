@@ -312,17 +312,24 @@ void JobDispatcher::Worker::run()
 			jobPtr = queuePtr->GetNextJob();
 		}
 
+		idlingMutex.lock();
 		if(running)
 		{
 			isIdling = true;
+			idlingMutex.unlock();
 			executionNotification.wait(executionLock);
 			isIdling = false;
+		}
+		else
+		{
+			idlingMutex.unlock();
 		}
 	}
 }
 
 bool JobDispatcher::Worker::IsIdling()
 {
+	std::unique_lock<std::mutex> isIdlingLock(idlingMutex);
 	return isIdling;
 }
 
