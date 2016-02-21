@@ -85,6 +85,7 @@ void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 	 */
 	Worker* worker = new Worker(&jobQueue);
 	worker->Start();
+	worker->Notify();
 	workers.push_back(worker);
 }
 
@@ -303,33 +304,26 @@ void JobDispatcher::Worker::run()
 {
 	while(running)
 	{
-		JobBase* jobPtr = queuePtr->GetNextJob();
-		while(jobPtr != nullptr)
-		{
-			jobPtr->Execute();
-			noOfJobsExecuted++;
-			delete jobPtr;
-			jobPtr = queuePtr->GetNextJob();
-		}
+		isIdling = true;
+		executionNotification.wait(executionLock);
+		isIdling = false;
 
-		idlingMutex.lock();
 		if(running)
 		{
-			isIdling = true;
-			idlingMutex.unlock();
-			executionNotification.wait(executionLock);
-			isIdling = false;
-		}
-		else
-		{
-			idlingMutex.unlock();
+			JobBase* jobPtr = queuePtr->GetNextJob();
+			while(jobPtr != nullptr)
+			{
+				jobPtr->Execute();
+				noOfJobsExecuted++;
+				delete jobPtr;
+				jobPtr = queuePtr->GetNextJob();
+			}
 		}
 	}
 }
 
 bool JobDispatcher::Worker::IsIdling()
 {
-	std::unique_lock<std::mutex> isIdlingLock(idlingMutex);
 	return isIdling;
 }
 

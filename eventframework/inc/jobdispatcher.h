@@ -116,7 +116,6 @@ private:
 		Worker();
 		uint32_t noOfJobsExecuted;
 		JobQueue* queuePtr;
-		std::mutex idlingMutex;
 		std::mutex executionNotificationMutex;
 		std::unique_lock<std::mutex> executionLock;
 		std::condition_variable executionNotification;
