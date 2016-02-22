@@ -85,7 +85,6 @@ void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 	 */
 	Worker* worker = new Worker(&jobQueue);
 	worker->Start();
-	worker->Notify();
 	workers.push_back(worker);
 }
 
@@ -304,21 +303,19 @@ void JobDispatcher::Worker::run()
 {
 	while(running)
 	{
-		isIdling = true;
-		executionNotification.wait(executionLock);
 		isIdling = false;
 
-		if(running)
+		JobBase* jobPtr = queuePtr->GetNextJob();
+		while(jobPtr != nullptr)
 		{
-			JobBase* jobPtr = queuePtr->GetNextJob();
-			while(jobPtr != nullptr)
-			{
-				jobPtr->Execute();
-				noOfJobsExecuted++;
-				delete jobPtr;
-				jobPtr = queuePtr->GetNextJob();
-			}
+			jobPtr->Execute();
+			noOfJobsExecuted++;
+			delete jobPtr;
+			jobPtr = queuePtr->GetNextJob();
 		}
+
+		isIdling = true;
+		executionNotification.wait(executionLock);
 	}
 }
 
