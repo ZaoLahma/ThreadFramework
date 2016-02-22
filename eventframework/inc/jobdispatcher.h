@@ -71,10 +71,10 @@ private:
 		JobBasePtrVectorT queue_1;
 		JobBasePtrVectorT queue_2;
 
-		std::atomic<uint32_t> indexToExecute;
-
 		JobBasePtrVectorT* currentQueue;
 		JobBasePtrVectorT* queueToExecute;
+
+		JobBasePtrVectorT::iterator currentElement;
 
 	};
 

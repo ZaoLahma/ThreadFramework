@@ -190,9 +190,9 @@ void JobDispatcher::NotifyExecutionFinished()
 
 //JobQueue
 JobDispatcher::JobQueue::JobQueue() :
-indexToExecute(0),
 currentQueue(&queue_1),
-queueToExecute(&queue_2)
+queueToExecute(&queue_2),
+currentElement(queueToExecute->end())
 {
 
 }
@@ -230,11 +230,11 @@ JobDispatcher::JobQueue::~JobQueue()
  {
 	 std::lock_guard<std::mutex> getJobLock(getJobMutex);
 
-	 if(indexToExecute == (*queueToExecute).size())
+	 if(currentElement == (*queueToExecute).end())
 	 {
 		 queueAccessMutex.lock();
 
-		 if(indexToExecute == (*queueToExecute).size())
+		 if(currentElement == (*queueToExecute).end())
 		 {
 			 JobBasePtrVectorT* _currentQueue = currentQueue;
 
@@ -243,7 +243,7 @@ JobDispatcher::JobQueue::~JobQueue()
 
 			 queueToExecute = _currentQueue;
 
-			 indexToExecute = 0;
+			 currentElement = (*queueToExecute).begin();
 		 }
 
 		 queueAccessMutex.unlock();
@@ -251,8 +251,8 @@ JobDispatcher::JobQueue::~JobQueue()
 
 	 if((*queueToExecute).size())
 	 {
-		 JobBase* jobToExecutePtr = (*queueToExecute)[indexToExecute];
-		 indexToExecute++;
+		 JobBase* jobToExecutePtr = (*currentElement);
+		 currentElement++;
 
 		 return jobToExecutePtr;
 	 }
