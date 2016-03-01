@@ -34,8 +34,13 @@ void WordFinder::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPt
 		if(eventDataPtr->instanceId == instanceNo)
 		{
 			JobDispatcher::GetApi()->UnsubscribeToEvent(WORD_FINDER_JOB_FINISHED, this);
+			JobDispatcher::GetApi()->Log("String: %s, Word: %s, No of occurrences: %d",
+					                      jobData.wordString.c_str(),
+										  jobData.wordToFind.c_str(),
+										  jobData.noOfOccurances);
+
 			std::lock_guard<std::mutex> printLock(instanceMutex);
-			std::cout<<"String: "<<jobData.wordString<<". Word: "<<jobData.wordToFind<<". No of occurances: "<<jobData.noOfOccurances<<std::endl;
+			std::cout<<"String: "<<jobData.wordString<<". Word: "<<jobData.wordToFind<<". No of occurrences: "<<jobData.noOfOccurances<<std::endl;
 		}
 	}
 }

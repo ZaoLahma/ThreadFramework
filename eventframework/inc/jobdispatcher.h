@@ -12,6 +12,8 @@
 #include <atomic>
 #include <map>
 #include <cinttypes>
+#include <fstream>
+#include <sstream>
 
 #include "jobbase.h"
 #include "eventlistenerbase.h"
@@ -34,6 +36,8 @@ public:
 	static JobDispatcher* GetApi();
 
 	//API
+	void Log(const char* formatString, ...);
+
 	void ExecuteJob(JobBase* jobPtr);
 
 	void ExecuteJobIn(JobBase* jobPtr, const uint32_t ms);
@@ -95,6 +99,21 @@ private:
 		const uint32_t eventNo;
 
 		EventDataBase* eventDataPtr;
+	};
+
+	class LogJob : public JobBase
+	{
+	public:
+		LogJob(const std::string& _stringToPrint);
+
+		void Execute();
+	protected:
+	private:
+		LogJob();
+
+		std::string stringToPrint;
+		std::ofstream fileStream;
+
 	};
 
 	class Worker : public ThreadObject

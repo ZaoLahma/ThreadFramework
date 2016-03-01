@@ -9,6 +9,7 @@
 #include "uniqueidprovider.h"
 #include <iostream>
 #include <thread>
+#include <iomanip>
 
 JobDispatcher* JobDispatcher::instance = nullptr;
 std::mutex JobDispatcher::instanceCreationMutex;
@@ -57,6 +58,25 @@ void JobDispatcher::DropInstance()
 {
 	delete instance;
 	instance = nullptr;
+}
+
+void JobDispatcher::Log(const char* formatString, ...)
+{
+	std::stringstream stringToPrint;
+
+	std::time_t time_c = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	stringToPrint<<std::put_time(std::localtime(&time_c), "[%F %T] ");
+
+	char buf[512];
+
+	va_list args;
+	va_start (args, formatString);
+	vsprintf (buf, formatString, args);
+	va_end (args);
+
+	stringToPrint<<std::string(buf)<<std::endl;
+
+	JobDispatcher::GetApi()->ExecuteJob(new LogJob(stringToPrint.str()));
 }
 
 void JobDispatcher::ExecuteJob(JobBase* jobPtr)
@@ -283,6 +303,20 @@ void JobDispatcher::EventJob::Execute()
 	}
 }
 
+//LogJob
+JobDispatcher::LogJob::LogJob(const std::string& _stringToPrint):
+stringToPrint(_stringToPrint)
+{
+
+}
+
+void JobDispatcher::LogJob::Execute()
+{
+	fileStream.open("log.txt", std::ios::app);
+	fileStream<<stringToPrint;
+	fileStream.close();
+}
+
 //Worker
 
 JobDispatcher::Worker::Worker(JobQueue* _queuePtr) :
@@ -332,6 +366,16 @@ uint32_t JobDispatcher::Worker::GetNoOfJobsExecuted()
 void JobDispatcher::Worker::Stop()
 {
 	running = false;
+
+	while(!isIdling)
+	{
+		/*
+		 * We need to wait for the worker to
+		 * finish its jobs before we can tell
+		 * it to exit
+		 */
+	}
+
 	Notify();
 
 	if(this->executorThread.joinable())

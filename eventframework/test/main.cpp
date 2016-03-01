@@ -21,6 +21,8 @@ public:
 
 int main(void)
 {
+	JobDispatcher::GetApi()->Log("This is a test log entry with an int: %d", 98);
+
 	/*
 	 * In this example instanceNo is used to make sure each WordFinder instance
 	 * will raise its own unique event.
