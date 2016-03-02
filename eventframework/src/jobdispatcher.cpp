@@ -120,7 +120,7 @@ std::string JobDispatcher::GetTimeStamp()
 	free(currentTime);
 #endif
 
-	const uint8_t buf_size = 50;
+	const uint8_t buf_size = 31;
 	char buf[buf_size];
     sprintf(buf, 
 		    "[%d-%02d-%02d %02d:%02d:%02d.%.9d]",
