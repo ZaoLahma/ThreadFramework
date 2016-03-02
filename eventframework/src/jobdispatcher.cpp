@@ -67,7 +67,7 @@ void JobDispatcher::Log(const char* formatString, ...)
 	std::time_t time_c = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	stringToPrint<<std::put_time(std::localtime(&time_c), "[%F %T] ");
 
-	char buf[512];
+	char buf[1024];
 
 	va_list args;
 	va_start (args, formatString);
@@ -304,6 +304,8 @@ void JobDispatcher::EventJob::Execute()
 }
 
 //LogJob
+std::mutex JobDispatcher::LogJob::fileAccessMutex;
+
 JobDispatcher::LogJob::LogJob(const std::string& _stringToPrint):
 stringToPrint(_stringToPrint)
 {
@@ -312,6 +314,7 @@ stringToPrint(_stringToPrint)
 
 void JobDispatcher::LogJob::Execute()
 {
+	std::unique_lock<std::mutex> fileAccessLock(fileAccessMutex);
 	fileStream.open("log.txt", std::ios::app);
 	fileStream<<stringToPrint;
 	fileStream.close();

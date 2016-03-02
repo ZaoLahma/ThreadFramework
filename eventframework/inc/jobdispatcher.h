@@ -14,6 +14,7 @@
 #include <cinttypes>
 #include <fstream>
 #include <sstream>
+#include <chrono>
 
 #include "jobbase.h"
 #include "eventlistenerbase.h"
@@ -113,6 +114,7 @@ private:
 
 		std::string stringToPrint;
 		std::ofstream fileStream;
+		static std::mutex fileAccessMutex;
 
 	};
 
