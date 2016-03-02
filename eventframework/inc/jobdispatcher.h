@@ -58,6 +58,9 @@ public:
 protected:
 
 private:
+	std::string GetTimeStamp();
+
+
 	//Helper class definitions
 	class JobQueue
 	{

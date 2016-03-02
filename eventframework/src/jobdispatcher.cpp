@@ -10,6 +10,7 @@
 #include <iostream>
 #include <thread>
 #include <iomanip>
+#include <cstdarg>
 
 JobDispatcher* JobDispatcher::instance = nullptr;
 std::mutex JobDispatcher::instanceCreationMutex;
@@ -64,8 +65,10 @@ void JobDispatcher::Log(const char* formatString, ...)
 {
 	std::stringstream stringToPrint;
 
-	std::time_t time_c = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	stringToPrint<<std::put_time(std::localtime(&time_c), "[%F %T] ");
+	//std::time_t time_c = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	//stringToPrint<<std::put_time(std::localtime(&time_c), "[%F %T] ");
+
+	stringToPrint<<GetTimeStamp();
 
 	char buf[1024];
 
@@ -77,6 +80,59 @@ void JobDispatcher::Log(const char* formatString, ...)
 	stringToPrint<<std::string(buf)<<std::endl;
 
 	JobDispatcher::GetApi()->ExecuteJob(new LogJob(stringToPrint.str()));
+}
+
+std::string JobDispatcher::GetTimeStamp()
+{
+    timespec ts;
+    struct tm* currentTime;
+
+#ifdef WIN32
+	time_t now = time(0);
+	currentTime = (tm*)malloc(sizeof(tm));
+	localtime_s(currentTime, &now);
+	ts.tv_nsec = 0;
+#else
+	#ifdef __APPLE__
+		clock_serv_t cclock;
+		mach_timespec_t mts;
+		host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+		clock_get_time(cclock, &mts);
+		mach_port_deallocate(mach_task_self(), cclock);
+		ts.tv_sec = mts.tv_sec;
+		ts.tv_nsec = mts.tv_nsec;
+	#else
+		clock_gettime(CLOCK_REALTIME, &ts);
+	#endif
+	
+	currentTime = localtime(&(ts.tv_sec));
+#endif
+
+    unsigned int year = currentTime->tm_year + 1900;
+    unsigned int month = currentTime->tm_mon + 1;
+    unsigned int day = currentTime->tm_mday;
+    unsigned int hour = currentTime->tm_hour;
+    unsigned int minute = currentTime->tm_min;
+    unsigned int second = currentTime->tm_sec;
+    unsigned int nsecond = ts.tv_nsec;
+    
+#ifdef WIN32
+	free(currentTime);
+#endif
+
+	const uint8_t buf_size = 50;
+	char buf[buf_size];
+    sprintf(buf, 
+		    "[%d-%02d-%02d %02d:%02d:%02d.%.9d]",
+		    year,
+		    month,
+		    day,
+		    hour,
+		    minute,
+		    second,
+		    nsecond);
+
+    return std::string(buf);
 }
 
 void JobDispatcher::ExecuteJob(JobBase* jobPtr)
