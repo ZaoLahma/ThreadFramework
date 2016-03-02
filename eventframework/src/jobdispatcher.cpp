@@ -12,6 +12,13 @@
 #include <iomanip>
 #include <cstdarg>
 
+#ifdef __APPLE__
+#include <mach/mach.h>
+#include <mach/mach_init.h>
+#include <mach/mach_time.h>
+#include <mach/clock.h>
+#endif
+
 JobDispatcher* JobDispatcher::instance = nullptr;
 std::mutex JobDispatcher::instanceCreationMutex;
 
