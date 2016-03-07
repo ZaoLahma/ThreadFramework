@@ -192,17 +192,6 @@ void JobDispatcher::SubscribeToEvent(uint32_t eventNo, EventListenerBase* eventL
 	}
 
 	eventIter->second.push_back(eventListenerPtr);
-
-	EventListenerToEventNoMap::iterator eventListenerIter = eventListenersEvents.find(eventListenerPtr);
-
-	if(eventListenersEvents.end() == eventListenerIter)
-	{
-		std::vector<uint32_t> eventsVector;
-		eventListenersEvents[eventListenerPtr] = eventsVector;
-		eventListenerIter = eventListenersEvents.begin();
-	}
-
-	eventListenerIter->second.push_back(eventNo);
 }
 
 void JobDispatcher::UnsubscribeToEvent(uint32_t eventNo, EventListenerBase* eventListenerPtr)

@@ -250,7 +250,6 @@ private:
 	JobQueue jobQueue;
 
 	EventNoToEventListenersMap eventEventListeners;
-	EventListenerToEventNoMap eventListenersEvents;
 
 	TimerStorage timerStorage;
 

@@ -3,3 +3,13 @@
 [2016-03-02 19:31:45.782955000]String: here we try to find the word word for the sake of finding word, Word: word, No of occurrences: 3
 [2016-03-02 19:31:45.783065000]String: Another semi random sentence just to get a semi parallel execution. Why not, I must ask., Word: sentence, No of occurrences: 1
 [2016-03-02 19:31:45.783096000]String: There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel., Word: parallel, No of occurrences: 3
+[2016-03-07 21:56:13.711494000]This is a test log entry with an int: 98
+[2016-03-07 21:56:13.712273000]String: this is a test string where we try to find the word test, Word: test, No of occurrences: 2
+[2016-03-07 21:56:13.712315000]String: here we try to find the word word for the sake of finding word, Word: word, No of occurrences: 3
+[2016-03-07 21:56:13.712391000]String: Another semi random sentence just to get a semi parallel execution. Why not, I must ask., Word: sentence, No of occurrences: 1
+[2016-03-07 21:56:13.712396000]String: There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel., Word: parallel, No of occurrences: 3
+[2016-03-07 21:57:00.937825000]This is a test log entry with an int: 98
+[2016-03-07 21:57:00.938575000]String: this is a test string where we try to find the word test, Word: test, No of occurrences: 2
+[2016-03-07 21:57:00.938600000]String: here we try to find the word word for the sake of finding word, Word: word, No of occurrences: 3
+[2016-03-07 21:57:00.938653000]String: Another semi random sentence just to get a semi parallel execution. Why not, I must ask., Word: sentence, No of occurrences: 1
+[2016-03-07 21:57:00.938676000]String: There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel., Word: parallel, No of occurrences: 3
