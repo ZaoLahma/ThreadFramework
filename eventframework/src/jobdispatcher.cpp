@@ -26,7 +26,9 @@ JobDispatcher::JobDispatcher() :
 noOfCores(std::thread::hardware_concurrency()),
 executionFinishedNotificationLock(executionFinishedNotificationMutex)
 {
-
+	std::ofstream fileStream;
+	fileStream.open("log.txt", std::ios::trunc);
+	fileStream.clear();
 }
 
 JobDispatcher::~JobDispatcher()
