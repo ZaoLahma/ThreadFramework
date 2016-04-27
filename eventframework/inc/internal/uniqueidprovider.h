@@ -5,8 +5,8 @@
  *      Author: janne
  */
 
-#ifndef INC_UNIQUEIDPROVIDER_H_
-#define INC_UNIQUEIDPROVIDER_H_
+#ifndef INC_INTERNAL_UNIQUEIDPROVIDER_H_
+#define INC_INTERNAL_UNIQUEIDPROVIDER_H_
 
 #include <mutex>
 
@@ -28,4 +28,4 @@ private:
 
 
 
-#endif /* INC_UNIQUEIDPROVIDER_H_ */
+#endif /* INC_INTERNAL_UNIQUEIDPROVIDER_H_ */

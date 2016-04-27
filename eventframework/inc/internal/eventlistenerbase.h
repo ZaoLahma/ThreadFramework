@@ -5,21 +5,12 @@
  *      Author: janne
  */
 
-#ifndef INC_EVENTLISTENERBASE_H_
-#define INC_EVENTLISTENERBASE_H_
+#ifndef INC_INTERNAL_EVENTLISTENERBASE_H_
+#define INC_INTERNAL_EVENTLISTENERBASE_H_
 
 #include <vector>
 #include <map>
-
-class EventDataBase
-{
-public:
-	virtual ~EventDataBase() {}
-	virtual EventDataBase* clone() const = 0;
-protected:
-
-public:
-};
+#include "eventdatabase.h"
 
 class EventListenerBase
 {
@@ -40,4 +31,4 @@ typedef std::map<uint32_t, EventListenerBasePtrVector> EventNoToEventListenersMa
 typedef std::map<EventListenerBase*, std::vector<uint32_t>> EventListenerToEventNoMap;
 
 
-#endif /* INC_EVENTLISTENERBASE_H_ */
+#endif /* INC_INTERNAL_EVENTLISTENERBASE_H_ */

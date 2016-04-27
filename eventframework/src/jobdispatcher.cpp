@@ -5,12 +5,19 @@
  *      Author: janne
  */
 
-#include "jobdispatcher.h"
-#include "uniqueidprovider.h"
+#include <sstream>
 #include <iostream>
 #include <thread>
 #include <iomanip>
 #include <cstdarg>
+
+#include "jobdispatcher.h"
+#include "internal/uniqueidprovider.h"
+#include "internal/logjob.h"
+#include "internal/jobtimer.h"
+#include "internal/eventjob.h"
+#include "internal/eventtimer.h"
+#include "internal/timereventdata.h"
 
 #ifdef __APPLE__
 #include <mach/mach.h>
@@ -175,7 +182,7 @@ void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 
 void JobDispatcher::ExecuteJobIn(JobBase* jobPtr, const uint32_t ms)
 {
-	JobDispatcher::JobTimer* timerPtr = new JobDispatcher::JobTimer(jobPtr, ms);
+	JobTimer* timerPtr = new JobTimer(jobPtr, ms);
 
 	timerStorage.StoreTimer(timerPtr);
 }
@@ -235,7 +242,7 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo, const EventDataBase* eventDataP
 
 		for( ; eventListenerIter != eventIter->second.end(); ++eventListenerIter)
 		{
-			JobDispatcher::EventJob* eventJob = new JobDispatcher::EventJob(*eventListenerIter, eventNo, eventDataPtr);
+			EventJob* eventJob = new EventJob(*eventListenerIter, eventNo, eventDataPtr);
 
 			JobDispatcher::GetApi()->ExecuteJob(eventJob);
 		}
@@ -246,7 +253,7 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo, const EventDataBase* eventDataP
 
 void JobDispatcher::RaiseEventIn(const uint32_t eventNo, const EventDataBase* eventDataPtr, const uint32_t ms)
 {
-	JobDispatcher::EventTimer* eventTimerPtr = new JobDispatcher::EventTimer(eventNo, eventDataPtr, ms);
+	EventTimer* eventTimerPtr = new EventTimer(eventNo, eventDataPtr, ms);
 
 	timerStorage.StoreTimer(eventTimerPtr);
 }
@@ -260,319 +267,4 @@ void JobDispatcher::WaitForExecutionFinished()
 void JobDispatcher::NotifyExecutionFinished()
 {
 	executionFinishedNotification.notify_one();
-}
-
-//JobQueue
-JobDispatcher::JobQueue::JobQueue() :
-currentQueue(&queue_1),
-queueToExecute(&queue_2),
-currentElement(queueToExecute->end())
-{
-
-}
-
-JobDispatcher::JobQueue::~JobQueue()
-{
-	JobBasePtrVectorT::iterator jobIter = queue_1.begin();
-
-	for( ; jobIter != queue_1.end(); ++jobIter)
-	{
-		delete *jobIter;
-		*jobIter = nullptr;
-	}
-
-	queue_1.clear();
-
-	jobIter = queue_2.begin();
-
-	for( ; jobIter != queue_2.end(); ++jobIter)
-	{
-		delete *jobIter;
-		*jobIter = nullptr;
-	}
-
-	queue_2.clear();
-}
-
- void JobDispatcher::JobQueue::QueueJob(JobBase* jobPtr)
- {
-	 std::lock_guard<std::mutex> lockGuard(queueAccessMutex);
-	 currentQueue->push_back(jobPtr);
- }
-
- JobBase* JobDispatcher::JobQueue::GetNextJob()
- {
-	 std::lock_guard<std::mutex> getJobLock(getJobMutex);
-
-	 if(currentElement == (*queueToExecute).end())
-	 {
-		 queueAccessMutex.lock();
-
-		 if(currentElement == (*queueToExecute).end())
-		 {
-			 JobBasePtrVectorT* _currentQueue = currentQueue;
-
-			 queueToExecute->clear();
-			 currentQueue = queueToExecute;
-
-			 queueToExecute = _currentQueue;
-
-			 currentElement = (*queueToExecute).begin();
-		 }
-
-		 queueAccessMutex.unlock();
-	 }
-
-	 if((*queueToExecute).size())
-	 {
-		 JobBase* jobToExecutePtr = (*currentElement);
-		 currentElement++;
-
-		 return jobToExecutePtr;
-	 }
-
-	 return nullptr;
- }
-
-//EventJob
-JobDispatcher::EventJob::EventJob(EventListenerBase* _eventListenerPtr,
-		                          const uint32_t _eventNo,
-								  const EventDataBase* _eventDataPtr) :
-eventListenerPtr(_eventListenerPtr),
-eventNo(_eventNo),
-eventDataPtr(nullptr)
-{
-	if(nullptr != _eventDataPtr)
-	{
-		eventDataPtr = _eventDataPtr->clone();
-	}
-}
-
-void JobDispatcher::EventJob::Execute()
-{
-	eventListenerPtr->HandleEvent(eventNo, eventDataPtr);
-	if(nullptr != eventDataPtr)
-	{
-		delete eventDataPtr;
-	}
-}
-
-//LogJob
-std::mutex JobDispatcher::LogJob::fileAccessMutex;
-
-JobDispatcher::LogJob::LogJob(const std::string& _stringToPrint):
-stringToPrint(_stringToPrint)
-{
-
-}
-
-void JobDispatcher::LogJob::Execute()
-{
-	std::unique_lock<std::mutex> fileAccessLock(fileAccessMutex);
-	fileStream.open("log.txt", std::ios::app);
-	fileStream<<stringToPrint;
-	fileStream.close();
-}
-
-//Worker
-
-JobDispatcher::Worker::Worker(JobQueue* _queuePtr) :
-noOfJobsExecuted(0),
-queuePtr(_queuePtr),
-executionLock(executionNotificationMutex),
-isIdling(false)
-{
-
-}
-
-void JobDispatcher::Worker::Notify()
-{
-	executionNotification.notify_one();
-}
-
-void JobDispatcher::Worker::run()
-{
-	while(running)
-	{
-		isIdling = false;
-
-		JobBase* jobPtr = queuePtr->GetNextJob();
-		while(jobPtr != nullptr)
-		{
-			jobPtr->Execute();
-			noOfJobsExecuted++;
-			delete jobPtr;
-			jobPtr = queuePtr->GetNextJob();
-		}
-
-		isIdling = true;
-		executionNotification.wait(executionLock);
-	}
-}
-
-bool JobDispatcher::Worker::IsIdling()
-{
-	return isIdling;
-}
-
-uint32_t JobDispatcher::Worker::GetNoOfJobsExecuted()
-{
-	return noOfJobsExecuted;
-}
-
-void JobDispatcher::Worker::Stop()
-{
-	running = false;
-
-	while(!isIdling)
-	{
-		/*
-		 * We need to wait for the worker to
-		 * finish its jobs before we can tell
-		 * it to exit
-		 */
-	}
-
-	Notify();
-
-	if(this->executorThread.joinable())
-	{
-		this->executorThread.join();
-	}
-}
-
-//TimerEventData
-JobDispatcher::TimerEventData::TimerEventData(const uint32_t _timerId) :
-timerId(_timerId)
-{
-
-}
-
-uint32_t JobDispatcher::TimerEventData::GetTimerId() const
-{
-	return timerId;
-}
-
-EventDataBase* JobDispatcher::TimerEventData::clone() const
-{
-	return new TimerEventData(*this);
-}
-
-//TimerBase
-JobDispatcher::TimerBase::TimerBase(const uint32_t _ms) :
-ms(_ms),
-timerId(0)
-{
-
-}
-
-void JobDispatcher::TimerBase::SetTimerId(const uint32_t _timerId)
-{
-	timerId = _timerId;
-}
-
-void JobDispatcher::TimerBase::run()
-{
-	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-
-	if(running)
-	{
-		//Execute this particular timer type's function
-		this->TimerFunction();
-
-		//Notify timer triggered
-		TimerEventData* eventDataPtr = new TimerEventData(timerId);
-		JobDispatcher::GetApi()->RaiseEvent(TIMEOUT_EVENT_ID, eventDataPtr);
-	}
-}
-
-//JobTimer
-JobDispatcher::JobTimer::JobTimer(JobBase* _jobPtr, const uint32_t _ms) :
-TimerBase(_ms),
-jobPtr(_jobPtr)
-{
-
-}
-
-void JobDispatcher::JobTimer::TimerFunction()
-{
-	JobDispatcher::GetApi()->ExecuteJob(jobPtr);
-}
-
-//EventTimer
-JobDispatcher::EventTimer::EventTimer(const uint32_t _eventNo, const EventDataBase* _dataPtr, const uint32_t _ms) :
-TimerBase(_ms),
-eventNo(_eventNo),
-eventDataPtr(_dataPtr)
-{
-
-}
-
-void JobDispatcher::EventTimer::TimerFunction()
-{
-	JobDispatcher::GetApi()->RaiseEvent(eventNo, eventDataPtr);
-}
-
-//TimerStorage
-JobDispatcher::TimerStorage::TimerStorage() :
-subscribedToEvent(false)
-{
-
-}
-
-JobDispatcher::TimerStorage::~TimerStorage()
-{
-	TimerBaseMap::iterator timerIter = timers.begin();
-
-	for( ; timerIter != timers.end(); ++timerIter)
-	{
-		delete timerIter->second;
-	}
-
-	timers.clear();
-}
-
-void JobDispatcher::TimerStorage::StoreTimer(TimerBase* _timer)
-{
-	if(false == subscribedToEvent)
-	{
-		/*
-		 *Can't do the subscription in the CTOR
-		 *due to it trying to create another
-		 *JobDispatcher instance
-		 */
-		subscribeMutex.lock();
-		if(false == subscribedToEvent)
-		{
-			subscribedToEvent = true;
-			JobDispatcher::GetApi()->SubscribeToEvent(TIMEOUT_EVENT_ID, this);
-		}
-		subscribeMutex.unlock();
-	}
-
-	const uint32_t timerId = UniqueIdProvider::GetApi()->GetUniqueId();
-
-	_timer->SetTimerId(timerId);
-	std::unique_lock<std::mutex> timersMapLock(timerMutex);
-	timers[timerId] = _timer;
-	_timer->Start();
-}
-
-void JobDispatcher::TimerStorage::HandleEvent(const uint32_t _eventNo, const EventDataBase* _dataPtr)
-{
-	if(TIMEOUT_EVENT_ID == _eventNo)
-	{
-		const TimerEventData* eventDataPtr = static_cast<const TimerEventData*>(_dataPtr);
-
-		std::unique_lock<std::mutex> timersMapLock(timerMutex);
-
-		TimerBaseMap::iterator timerIter = timers.find(eventDataPtr->GetTimerId());
-
-		if(timers.end() != timerIter)
-		{
-			delete timerIter->second;
-			timers.erase(timerIter);
-		}
-	}
-
 }

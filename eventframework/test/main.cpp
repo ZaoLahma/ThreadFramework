@@ -6,9 +6,8 @@
  */
 
 #include "wordfinder.h"
-#include "jobbase.h"
-
 #include <iostream>
+#include "../inc/internal/jobbase.h"
 
 class EndExecutionJob : public JobBase
 {

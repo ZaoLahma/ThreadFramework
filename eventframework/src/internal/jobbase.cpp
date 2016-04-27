@@ -5,7 +5,7 @@
  *      Author: janne
  */
 
-#include "../inc/jobbase.h"
+#include "../inc/internal/jobbase.h"
 
 JobBase::~JobBase()
 {

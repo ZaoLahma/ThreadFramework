@@ -12,17 +12,15 @@
 #include <atomic>
 #include <map>
 #include <cinttypes>
-#include <fstream>
-#include <sstream>
 #include <chrono>
 
-#include "jobbase.h"
-#include "eventlistenerbase.h"
-
-//For worker
 #include <vector>
 #include <condition_variable>
-#include "threadobject.h"
+
+#include "internal/eventlistenerbase.h"
+#include "internal/jobbase.h"
+#include "internal/timerstorage.h"
+#include "internal/worker.h"
 
 #define TIMEOUT_EVENT_ID 0x0 //Move me to appropriate place
 
@@ -59,178 +57,6 @@ protected:
 
 private:
 	std::string GetTimeStamp();
-
-
-	//Helper class definitions
-	class JobQueue
-	{
-	public:
-		JobQueue();
-
-		~JobQueue();
-
-		void QueueJob(JobBase* jobPtr);
-		JobBase* GetNextJob();
-	protected:
-	private:
-		std::mutex queueAccessMutex;
-		std::mutex getJobMutex;
-
-		JobBasePtrVectorT queue_1;
-		JobBasePtrVectorT queue_2;
-
-		JobBasePtrVectorT* currentQueue;
-		JobBasePtrVectorT* queueToExecute;
-
-		JobBasePtrVectorT::iterator currentElement;
-
-	};
-
-	class EventJob : public JobBase
-	{
-	public:
-		EventJob(EventListenerBase* _eventListenerPtr,
-				 const uint32_t _eventNo,
-				 const EventDataBase* _eventDataPtr);
-
-		void Execute();
-	protected:
-	private:
-		EventJob();
-
-		EventListenerBase* eventListenerPtr;
-
-		const uint32_t eventNo;
-
-		EventDataBase* eventDataPtr;
-	};
-
-	class LogJob : public JobBase
-	{
-	public:
-		LogJob(const std::string& _stringToPrint);
-
-		void Execute();
-	protected:
-	private:
-		LogJob();
-
-		std::string stringToPrint;
-		std::ofstream fileStream;
-		static std::mutex fileAccessMutex;
-
-	};
-
-	class Worker : public ThreadObject
-	{
-	public:
-		Worker(JobQueue* _queuePtr);
-
-		void Notify();
-
-		bool IsIdling();
-
-		uint32_t GetNoOfJobsExecuted();
-
-		void Stop();
-
-	protected:
-
-	private:
-		Worker();
-		uint32_t noOfJobsExecuted;
-		JobQueue* queuePtr;
-		std::mutex executionNotificationMutex;
-		std::unique_lock<std::mutex> executionLock;
-		std::condition_variable executionNotification;
-
-		std::atomic<bool> isIdling;
-
-		void run();
-	};
-
-	class TimerEventData : public EventDataBase
-	{
-	public:
-		TimerEventData(const uint32_t);
-
-		EventDataBase* clone() const;
-
-		uint32_t GetTimerId() const;
-
-	protected:
-
-	private:
-		const uint32_t timerId;
-		TimerEventData();
-	};
-
-	class TimerBase : public ThreadObject
-	{
-	public:
-		TimerBase(const uint32_t _ms);
-		virtual ~TimerBase() {}
-
-		void SetTimerId(const uint32_t _timerId);
-
-		void run();
-
-		virtual void TimerFunction() = 0;
-
-	protected:
-		const uint32_t ms;
-		uint32_t timerId;
-
-	private:
-		TimerBase();
-	};
-
-	typedef std::map<uint32_t, TimerBase*> TimerBaseMap;
-
-	class JobTimer : public TimerBase
-	{
-	public:
-		JobTimer(JobBase* _jobPtr, const uint32_t _ms);
-
-		void TimerFunction();
-
-	protected:
-
-	private:
-		JobTimer();
-		JobBase* jobPtr;
-	};
-
-	class EventTimer : public TimerBase
-	{
-	public:
-		EventTimer(const uint32_t eventNo, const EventDataBase* _dataPtr, const uint32_t _ms);
-		void TimerFunction();
-
-	protected:
-
-	private:
-		EventTimer();
-		const uint32_t eventNo;
-		const EventDataBase* eventDataPtr;
-	};
-
-	class TimerStorage : public EventListenerBase
-	{
-	public:
-		TimerStorage();
-		~TimerStorage();
-		void StoreTimer(TimerBase* _timer);
-		void HandleEvent(const uint32_t _eventNo, const EventDataBase* _dataPtr);
-
-	protected:
-
-	private:
-		bool subscribedToEvent;
-		std::mutex subscribeMutex;
-		TimerBaseMap timers;
-		std::mutex timerMutex;
-	};
 
 	//Private attrbutes
 	uint32_t noOfCores;

@@ -5,7 +5,8 @@
  *      Author: janne
  */
 
-#include "eventlistenerbase.h"
+#include "../inc/internal/eventlistenerbase.h"
+
 #include "jobdispatcher.h"
 
 EventListenerBase::~EventListenerBase()

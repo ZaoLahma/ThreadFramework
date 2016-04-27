@@ -1,7 +1,7 @@
 CCOMMAND = g++
 CFLAGS = -Wall -c -Wextra --std=c++11 
 LINKARGS = -lpthread
-SRC_FILES = ./src/*.cpp
+SRC_FILES = ./src/*.cpp ./src/internal/*.cpp
 TEST_FILES = ./test/*.cpp
 INC_DIRS = ./inc
 EXE_NAME = event_framework

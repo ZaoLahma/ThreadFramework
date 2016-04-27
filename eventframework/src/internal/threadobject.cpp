@@ -1,4 +1,4 @@
-#include "./threadobject.h"
+#include "../inc/internal/threadobject.h"
 
 ThreadObject::ThreadObject() :
 running(false)

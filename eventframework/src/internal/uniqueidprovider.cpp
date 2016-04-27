@@ -4,7 +4,7 @@
  *  Created on: Feb 16, 2016
  *      Author: janne
  */
-#include "uniqueidprovider.h"
+#include "../inc/internal/uniqueidprovider.h"
 
 UniqueIdProvider* UniqueIdProvider::instance = nullptr;
 std::mutex UniqueIdProvider::instanceCreationMutex;

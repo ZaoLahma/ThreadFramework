@@ -8,10 +8,9 @@
 #ifndef TEST_WORDFINDERJOB_H_
 #define TEST_WORDFINDERJOB_H_
 
-#include "jobbase.h"
-#include "eventlistenerbase.h"
-
 #include <string>
+#include "../inc/internal/eventlistenerbase.h"
+#include "../inc/internal/jobbase.h"
 
 
 #define WORD_FINDER_JOB_FINISHED 0x00000001
