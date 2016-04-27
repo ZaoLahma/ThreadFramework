@@ -9,7 +9,8 @@
 #define INC_INTERNAL_EVENTTIMER_H_
 
 #include <cinttypes>
-#include "eventdatabase.h"
+
+#include "../eventdatabase.h"
 #include "timerbase.h"
 
 class EventTimer : public TimerBase

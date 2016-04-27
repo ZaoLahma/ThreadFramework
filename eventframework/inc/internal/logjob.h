@@ -11,7 +11,8 @@
 #include <mutex>
 #include <iostream>
 #include <fstream>
-#include "internal/jobbase.h"
+
+#include "../jobbase.h"
 
 class LogJob : public JobBase
 {

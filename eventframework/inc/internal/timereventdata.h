@@ -8,8 +8,8 @@
 #ifndef INC_INTERNAL_TIMEREVENTDATA_H_
 #define INC_INTERNAL_TIMEREVENTDATA_H_
 
-#include "eventdatabase.h"
 #include <cinttypes>
+#include "../eventdatabase.h"
 
 class TimerEventData : public EventDataBase
 {

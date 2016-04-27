@@ -17,10 +17,10 @@
 #include <vector>
 #include <condition_variable>
 
-#include "internal/eventlistenerbase.h"
-#include "internal/jobbase.h"
+#include "eventlistenerbase.h"
 #include "internal/timerstorage.h"
 #include "internal/worker.h"
+#include "jobbase.h"
 
 #define TIMEOUT_EVENT_ID 0x0 //Move me to appropriate place
 

@@ -8,9 +8,9 @@
 #ifndef INC_INTERNAL_EVENTJOB_H_
 #define INC_INTERNAL_EVENTJOB_H_
 
-#include "jobbase.h"
-#include "eventdatabase.h"
-#include "eventlistenerbase.h"
+#include "../eventdatabase.h"
+#include "../eventlistenerbase.h"
+#include "../jobbase.h"
 
 class EventJob : public JobBase
 {

@@ -9,8 +9,9 @@
 #define INC_INTERNAL_JOBTIMER_H_
 
 #include <cinttypes>
+
+#include "../jobbase.h"
 #include "timerbase.h"
-#include "jobbase.h"
 
 class JobTimer : public TimerBase
 {

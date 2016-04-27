@@ -10,7 +10,8 @@
 
 #include <cinttypes>
 #include <map>
-#include "jobbase.h"
+
+#include "../jobbase.h"
 #include "threadobject.h"
 #include "timereventdata.h"
 

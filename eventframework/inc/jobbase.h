@@ -5,8 +5,8 @@
  *      Author: janne
  */
 
-#ifndef INC_INTERNAL_JOBBASE_H_
-#define INC_INTERNAL_JOBBASE_H_
+#ifndef INC_JOBBASE_H_
+#define INC_JOBBASE_H_
 
 #include <vector>
 
@@ -36,4 +36,4 @@ private:
 
 typedef std::vector<JobBase*> JobBasePtrVectorT;
 
-#endif /* INC_INTERNAL_JOBBASE_H_ */
+#endif /* INC_JOBBASE_H_ */

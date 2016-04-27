@@ -8,8 +8,8 @@
 #ifndef INC_INTERNAL_JOBQUEUE_H_
 #define INC_INTERNAL_JOBQUEUE_H_
 
-#include "jobbase.h"
 #include <mutex>
+#include "../jobbase.h"
 
 class JobQueue
 {

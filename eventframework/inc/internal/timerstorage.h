@@ -8,10 +8,10 @@
 #ifndef INC_INTERNAL_TIMERSTORAGE_H_
 #define INC_INTERNAL_TIMERSTORAGE_H_
 
-#include "eventlistenerbase.h"
-#include "eventdatabase.h"
 #include "timerbase.h"
 #include <mutex>
+#include "../eventdatabase.h"
+#include "../eventlistenerbase.h"
 
 class TimerStorage : public EventListenerBase
 {

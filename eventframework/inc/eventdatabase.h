@@ -5,8 +5,8 @@
  *      Author: janne
  */
 
-#ifndef INC_INTERNAL_EVENTDATABASE_H_
-#define INC_INTERNAL_EVENTDATABASE_H_
+#ifndef INC_EVENTDATABASE_H_
+#define INC_EVENTDATABASE_H_
 
 
 class EventDataBase
@@ -20,4 +20,4 @@ public:
 };
 
 
-#endif /* INC_INTERNAL_EVENTDATABASE_H_ */
+#endif /* INC_EVENTDATABASE_H_ */
