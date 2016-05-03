@@ -12,7 +12,8 @@
 #include <cstdarg>
 
 #include "jobdispatcher.h"
-#include "internal/uniqueidprovider.h"
+#include "uniqueidprovider.h"
+
 #include "internal/logjob.h"
 #include "internal/jobtimer.h"
 #include "internal/eventjob.h"

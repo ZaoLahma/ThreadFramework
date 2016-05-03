@@ -6,7 +6,8 @@
  */
 
 #include "internal/timerstorage.h"
-#include "internal/uniqueidprovider.h"
+
+#include "uniqueidprovider.h"
 #include "jobdispatcher.h"
 
 TimerStorage::TimerStorage() :
