@@ -18,6 +18,8 @@ subscribedToEvent(false)
 
 TimerStorage::~TimerStorage()
 {
+	JobDispatcher::GetApi()->UnsubscribeToEvent(TIMEOUT_EVENT_ID, this);
+
 	TimerBaseMap::iterator timerIter = timers.begin();
 
 	for( ; timerIter != timers.end(); ++timerIter)
@@ -70,5 +72,4 @@ void TimerStorage::HandleEvent(const uint32_t _eventNo, const EventDataBase* _da
 			timers.erase(timerIter);
 		}
 	}
-
 }

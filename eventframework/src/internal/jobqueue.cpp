@@ -71,9 +71,7 @@ JobQueue::~JobQueue()
 	 {
 		 JobBase* jobToExecutePtr = (*currentElement);
 		 currentElement++;
-
 		 return jobToExecutePtr;
 	 }
-
 	 return nullptr;
  }

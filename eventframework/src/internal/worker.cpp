@@ -6,6 +6,7 @@
  */
 
 #include "internal/worker.h"
+#include <iostream>
 
 Worker::Worker(JobQueue* _queuePtr) :
 noOfJobsExecuted(0),
@@ -28,7 +29,7 @@ void Worker::run()
 		isIdling = false;
 
 		JobBase* jobPtr = queuePtr->GetNextJob();
-		while(jobPtr != nullptr)
+		while(running && jobPtr != nullptr)
 		{
 			jobPtr->Execute();
 			noOfJobsExecuted++;
@@ -37,6 +38,10 @@ void Worker::run()
 		}
 
 		isIdling = true;
+		if(!running)
+		{
+			return;
+		}
 		executionNotification.wait(executionLock);
 	}
 }
@@ -62,6 +67,7 @@ void Worker::Stop()
 		 * finish its jobs before we can tell
 		 * it to exit
 		 */
+		Notify();
 	}
 
 	Notify();

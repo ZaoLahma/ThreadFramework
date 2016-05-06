@@ -73,7 +73,7 @@ private:
 
 	WorkerPtrVector workers;
 
-	JobQueue jobQueue;
+	JobQueue* jobQueuePtr;
 
 	EventNoToEventListenersMap eventEventListeners;
 

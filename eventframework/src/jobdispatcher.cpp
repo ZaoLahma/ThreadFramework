@@ -32,7 +32,8 @@ std::mutex JobDispatcher::instanceCreationMutex;
 
 JobDispatcher::JobDispatcher() :
 noOfCores(std::thread::hardware_concurrency()),
-executionFinishedNotificationLock(executionFinishedNotificationMutex)
+executionFinishedNotificationLock(executionFinishedNotificationMutex),
+jobQueuePtr(new JobQueue())
 {
 	std::ofstream fileStream;
 	fileStream.open("log.txt", std::ios::trunc);
@@ -55,6 +56,9 @@ JobDispatcher::~JobDispatcher()
 	}
 
 	workers.clear();
+
+	delete jobQueuePtr;
+	jobQueuePtr = nullptr;
 }
 
 JobDispatcher* JobDispatcher::GetApi()
@@ -157,7 +161,7 @@ void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 	/*
 	 * Queue job and notify first idling worker (if any)
 	 */
-	jobQueue.QueueJob(jobPtr);
+	jobQueuePtr->QueueJob(jobPtr);
 
 	std::lock_guard<std::mutex> workerCreationLock(workerCreationMutex);
 	WorkerPtrVector::iterator workerIter = workers.begin();
@@ -176,7 +180,7 @@ void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 	 * The framework will adjust upwards to the worst
 	 * case, but never downwards.
 	 */
-	Worker* worker = new Worker(&jobQueue);
+	Worker* worker = new Worker(jobQueuePtr);
 	worker->Start();
 	workers.push_back(worker);
 }
