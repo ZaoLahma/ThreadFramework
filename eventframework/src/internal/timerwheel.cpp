@@ -51,7 +51,6 @@ void TimerWheel::run() {
 
 		JobBasePtrVectorT::iterator jobIter = msArray[arrayIndex].begin();
 		for( ; jobIter != msArray[arrayIndex].end(); ++jobIter) {
-			JobDispatcher::GetApi()->Log("Executing job at ms: %d", arrayIndex);
 			JobDispatcher::GetApi()->ExecuteJob(*jobIter);
 		}
 
