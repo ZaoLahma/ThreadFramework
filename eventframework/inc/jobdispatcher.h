@@ -19,7 +19,6 @@
 
 #include "eventlistenerbase.h"
 #include "internal/timerwheel.h"
-#include "internal/timerstorage.h"
 #include "internal/worker.h"
 #include "jobbase.h"
 
@@ -59,7 +58,7 @@ protected:
 private:
 	std::string GetTimeStamp();
 
-	//Private attrbutes
+	//Private attributes
 	uint32_t noOfCores;
 
 	std::mutex workerCreationMutex;
@@ -76,8 +75,7 @@ private:
 
 	JobQueue* jobQueuePtr;
 
-	TimerWheel timerWheel;
-	TimerStorage timerStorage;
+	TimerWheel* timerWheelPtr;
 
 	EventNoToEventListenersMap eventEventListeners;
 

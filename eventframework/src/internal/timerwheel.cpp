@@ -13,6 +13,20 @@ arrayIndex(0)
 {
 }
 
+TimerWheel::~TimerWheel() {
+
+	std::lock_guard<std::mutex> addJobLock(addJobMutex);
+
+	for(uint32_t i = 0; i < 1000; ++i) {
+		JobBasePtrVectorT::iterator jobIter = msArray[arrayIndex].begin();
+		for( ; jobIter != msArray[arrayIndex].end(); ++jobIter) {
+			printf("Deleting job\n");
+			delete *jobIter;
+		}
+		msArray[i].clear();
+	}
+}
+
 void TimerWheel::AddJob(uint32_t ms, JobBase* jobPtr) {
 	std::lock_guard<std::mutex> addJobLock(addJobMutex);
 
@@ -31,8 +45,13 @@ void TimerWheel::run() {
 
 		std::lock_guard<std::mutex> addJobLock(addJobMutex);
 
+		if(!running) {
+			break;
+		}
+
 		JobBasePtrVectorT::iterator jobIter = msArray[arrayIndex].begin();
 		for( ; jobIter != msArray[arrayIndex].end(); ++jobIter) {
+			JobDispatcher::GetApi()->Log("Executing job at ms: %d", arrayIndex);
 			JobDispatcher::GetApi()->ExecuteJob(*jobIter);
 		}
 

@@ -1,6 +1,10 @@
-[2016-08-10 19:41:02.479039000]This is a test log entry with an int: 98
-[2016-08-10 19:41:02.480870000]Adding new job to execute in 300 ms
-[2016-08-10 19:41:02.481088000]String: this is a test string where we try to find the word test, Word: test, No of occurrences: 2
-[2016-08-10 19:41:02.481114000]String: here we try to find the word word for the sake of finding word, Word: word, No of occurrences: 3
-[2016-08-10 19:41:02.481145000]String: Another semi random sentence just to get a semi parallel execution. Why not, I must ask., Word: sentence, No of occurrences: 1
-[2016-08-10 19:41:02.481170000]String: There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel., Word: parallel, No of occurrences: 3
+[2016-08-10 20:13:27.532643000]This is a test log entry with an int: 98
+[2016-08-10 20:13:27.765873000]Executing job at ms: 9
+[2016-08-10 20:13:27.772006000]Executing job at ms: 9
+[2016-08-10 20:13:27.772656000]Executing job at ms: 9
+[2016-08-10 20:13:27.784530000]Executing job at ms: 9
+[2016-08-10 20:13:27.795665000]String: this is a test string where we try to find the word test, Word: test, No of occurrences: 2
+[2016-08-10 20:13:27.815451000]String: here we try to find the word word for the sake of finding word, Word: word, No of occurrences: 3
+[2016-08-10 20:13:27.817348000]String: Another semi random sentence just to get a semi parallel execution. Why not, I must ask., Word: sentence, No of occurrences: 1
+[2016-08-10 20:13:27.825369000]String: There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel., Word: parallel, No of occurrences: 3
+[2016-08-10 20:13:28.255233000]Executing job at ms: 307

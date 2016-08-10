@@ -16,6 +16,7 @@ class TimerWheel : public ThreadObject
 {
 public:
 	TimerWheel();
+	~TimerWheel();
 
 	void AddJob(uint32_t ms, JobBase* jobPtr);
 
