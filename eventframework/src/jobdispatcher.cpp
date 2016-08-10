@@ -35,6 +35,7 @@ noOfCores(std::thread::hardware_concurrency()),
 executionFinishedNotificationLock(executionFinishedNotificationMutex),
 jobQueuePtr(new JobQueue())
 {
+	timerWheel.Start();
 	std::ofstream fileStream;
 	fileStream.open("log.txt", std::ios::trunc);
 	fileStream.clear();
@@ -43,6 +44,8 @@ jobQueuePtr(new JobQueue())
 JobDispatcher::~JobDispatcher()
 {
 	std::cout<<"JobDispatcher::DTOR called. No of workers: "<<workers.size()<<std::endl;
+
+	timerWheel.Stop();
 
 	WorkerPtrVector::iterator workerIter = workers.begin();
 
@@ -187,9 +190,7 @@ void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 
 void JobDispatcher::ExecuteJobIn(JobBase* jobPtr, const uint32_t ms)
 {
-	JobTimer* timerPtr = new JobTimer(jobPtr, ms);
-
-	timerStorage.StoreTimer(timerPtr);
+	timerWheel.AddJob(ms, jobPtr);
 }
 
 void JobDispatcher::SubscribeToEvent(uint32_t eventNo, EventListenerBase* eventListenerPtr)

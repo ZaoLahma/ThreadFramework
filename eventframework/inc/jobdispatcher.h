@@ -18,6 +18,7 @@
 #include <condition_variable>
 
 #include "eventlistenerbase.h"
+#include "internal/timerwheel.h"
 #include "internal/timerstorage.h"
 #include "internal/worker.h"
 #include "jobbase.h"
@@ -75,9 +76,10 @@ private:
 
 	JobQueue* jobQueuePtr;
 
-	EventNoToEventListenersMap eventEventListeners;
-
+	TimerWheel timerWheel;
 	TimerStorage timerStorage;
+
+	EventNoToEventListenersMap eventEventListeners;
 
 	JobDispatcher();
 	static std::mutex instanceCreationMutex;
