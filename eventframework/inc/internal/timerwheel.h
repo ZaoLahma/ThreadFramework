@@ -23,10 +23,18 @@ public:
 protected:
 
 private:
+	struct LongRunningTimer {
+		uint32_t ms;
+		JobBase* jobPtr;
+	};
+	typedef std::vector<LongRunningTimer> LongRunningTimerVectorT;
+
 	void run();
+	void InsertJobToTimerArray(uint32_t ms, JobBase* jobPtr);
 	std::mutex addJobMutex;
 	uint32_t arrayIndex;
 	JobBasePtrVectorT msArray[1000];
+	LongRunningTimerVectorT longRunningTimers;
 };
 
 

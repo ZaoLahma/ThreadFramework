@@ -1,5 +1,5 @@
-[2016-08-10 20:17:47.762143000]This is a test log entry with an int: 98
-[2016-08-10 20:17:47.764815000]String: There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel., Word: parallel, No of occurrences: 3
-[2016-08-10 20:17:47.764803000]String: here we try to find the word word for the sake of finding word, Word: word, No of occurrences: 3
-[2016-08-10 20:17:47.764786000]String: this is a test string where we try to find the word test, Word: test, No of occurrences: 2
-[2016-08-10 20:17:47.764810000]String: Another semi random sentence just to get a semi parallel execution. Why not, I must ask., Word: sentence, No of occurrences: 1
+[2016-08-13 10:30:56.569511000]This is a test log entry with an int: 98
+[2016-08-13 10:30:56.572009000]String: here we try to find the word word for the sake of finding word, Word: word, No of occurrences: 3
+[2016-08-13 10:30:56.572009000]String: this is a test string where we try to find the word test, Word: test, No of occurrences: 2
+[2016-08-13 10:30:56.572074000]String: Another semi random sentence just to get a semi parallel execution. Why not, I must ask., Word: sentence, No of occurrences: 1
+[2016-08-13 10:30:56.572132000]String: There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel., Word: parallel, No of occurrences: 3

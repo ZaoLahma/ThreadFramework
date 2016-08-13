@@ -30,6 +30,20 @@ TimerWheel::~TimerWheel() {
 void TimerWheel::AddJob(uint32_t ms, JobBase* jobPtr) {
 	std::lock_guard<std::mutex> addJobLock(addJobMutex);
 
+	InsertJobToTimerArray(ms, jobPtr);
+}
+
+void TimerWheel::InsertJobToTimerArray(uint32_t ms, JobBase* jobPtr) {
+	printf("Started new timer set to expire in %d ms\n", ms);
+
+	if(ms > 999) {
+		LongRunningTimer newTimer;
+		newTimer.ms = ms;
+		newTimer.jobPtr = jobPtr;
+		longRunningTimers.push_back(newTimer);
+		return;
+	}
+
 	uint32_t insertIndex = arrayIndex + ms;
 
 	if(insertIndex > 999) {
@@ -60,6 +74,19 @@ void TimerWheel::run() {
 
 		if(arrayIndex > 999) {
 			arrayIndex = 0;
+
+			//Check if any of the long running timers should be scheduled
+			LongRunningTimerVectorT::iterator timerIter = longRunningTimers.begin();
+			while (timerIter != longRunningTimers.end()) {
+				printf("Checking if long running timer should be scheduled\n");
+				(*timerIter).ms -= 1000;
+				if((*timerIter).ms < 1000) {
+					InsertJobToTimerArray((*timerIter).ms, (*timerIter).jobPtr);
+					timerIter = longRunningTimers.erase(timerIter);
+					continue;
+				}
+				timerIter++;
+			}
 		}
 	}
 }
