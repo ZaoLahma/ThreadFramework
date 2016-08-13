@@ -25,6 +25,14 @@ TimerWheel::~TimerWheel() {
 		}
 		msArray[i].clear();
 	}
+
+	LongRunningTimerVectorT::iterator timerIter = longRunningTimers.begin();
+
+	for( ; timerIter != longRunningTimers.end(); ++timerIter) {
+		delete (*timerIter).jobPtr;
+	}
+
+	longRunningTimers.clear();
 }
 
 void TimerWheel::AddJob(uint32_t ms, JobBase* jobPtr) {
