@@ -42,7 +42,7 @@ void TimerWheel::AddJob(uint32_t ms, JobBase* jobPtr) {
 }
 
 void TimerWheel::InsertJobToTimerArray(uint32_t ms, JobBase* jobPtr) {
-	printf("Started new timer set to expire in %d ms\n", ms);
+	JobDispatcher::GetApi()->Log("Started new timer set to expire in %d ms", ms);
 
 	if(ms > 999) {
 		LongRunningTimer newTimer;
@@ -59,6 +59,8 @@ void TimerWheel::InsertJobToTimerArray(uint32_t ms, JobBase* jobPtr) {
 	}
 
 	msArray[insertIndex].push_back(jobPtr);
+
+	JobDispatcher::GetApi()->Log("Added timer at index: %d, current array index: %d", insertIndex, arrayIndex);
 }
 
 void TimerWheel::run() {
@@ -73,6 +75,7 @@ void TimerWheel::run() {
 
 		JobBasePtrVectorT::iterator jobIter = msArray[arrayIndex].begin();
 		for( ; jobIter != msArray[arrayIndex].end(); ++jobIter) {
+			JobDispatcher::GetApi()->Log("Timer expired at current index: %d", arrayIndex);
 			JobDispatcher::GetApi()->ExecuteJob(*jobIter);
 		}
 
@@ -84,9 +87,9 @@ void TimerWheel::run() {
 			arrayIndex = 0;
 
 			//Check if any of the long running timers should be scheduled
+			JobDispatcher::GetApi()->Log("Checking if any long running timers should be scheduled");
 			LongRunningTimerVectorT::iterator timerIter = longRunningTimers.begin();
 			while (timerIter != longRunningTimers.end()) {
-				printf("Checking if long running timer should be scheduled\n");
 				(*timerIter).ms -= 1000;
 				if((*timerIter).ms < 1000) {
 					InsertJobToTimerArray((*timerIter).ms, (*timerIter).jobPtr);

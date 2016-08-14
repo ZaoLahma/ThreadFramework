@@ -1,5 +1,22 @@
-[2016-08-13 10:30:56.569511000]This is a test log entry with an int: 98
-[2016-08-13 10:30:56.572009000]String: here we try to find the word word for the sake of finding word, Word: word, No of occurrences: 3
-[2016-08-13 10:30:56.572009000]String: this is a test string where we try to find the word test, Word: test, No of occurrences: 2
-[2016-08-13 10:30:56.572074000]String: Another semi random sentence just to get a semi parallel execution. Why not, I must ask., Word: sentence, No of occurrences: 1
-[2016-08-13 10:30:56.572132000]String: There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel., Word: parallel, No of occurrences: 3
+[2016-08-13 11:02:46.189935000]This is a test log entry with an int: 98
+[2016-08-13 11:02:46.190535000]Started new timer set to expire in 1 ms
+[2016-08-13 11:02:46.190597000]Added timer at index: 1, current array index: 0
+[2016-08-13 11:02:46.190644000]Started new timer set to expire in 1200 ms
+[2016-08-13 11:02:46.190682000]Started new timer set to expire in 1 ms
+[2016-08-13 11:02:46.190705000]Added timer at index: 1, current array index: 0
+[2016-08-13 11:02:46.190761000]Started new timer set to expire in 1 ms
+[2016-08-13 11:02:46.190782000]Added timer at index: 1, current array index: 0
+[2016-08-13 11:02:46.190836000]Started new timer set to expire in 1 ms
+[2016-08-13 11:02:46.190853000]Added timer at index: 1, current array index: 0
+[2016-08-13 11:02:46.192122000]Timer expired at current index: 1
+[2016-08-13 11:02:46.192148000]Timer expired at current index: 1
+[2016-08-13 11:02:46.192164000]Timer expired at current index: 1
+[2016-08-13 11:02:46.192181000]Timer expired at current index: 1
+[2016-08-13 11:02:46.192246000]String: this is a test string where we try to find the word test, Word: test, No of occurrences: 2
+[2016-08-13 11:02:46.192267000]String: here we try to find the word word for the sake of finding word, Word: word, No of occurrences: 3
+[2016-08-13 11:02:46.192293000]String: Another semi random sentence just to get a semi parallel execution. Why not, I must ask., Word: sentence, No of occurrences: 1
+[2016-08-13 11:02:46.192307000]String: There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel., Word: parallel, No of occurrences: 3
+[2016-08-13 11:02:47.568172000]Checking if any long running timers should be scheduled
+[2016-08-13 11:02:47.568260000]Started new timer set to expire in 200 ms
+[2016-08-13 11:02:47.568281000]Added timer at index: 200, current array index: 0
+[2016-08-13 11:02:47.846936000]Timer expired at current index: 200

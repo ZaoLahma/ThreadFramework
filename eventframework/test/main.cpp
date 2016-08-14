@@ -54,7 +54,7 @@ int main(void)
 	 * event for example triggered by a window manager
 	 */
 	EndExecutionJob* endExecutionJobPtr = new EndExecutionJob();
-	const uint32_t msToSleep = 1600;
+	const uint32_t msToSleep = 1200;
 	JobDispatcher::GetApi()->ExecuteJobIn(endExecutionJobPtr, msToSleep);
 
 	/*
