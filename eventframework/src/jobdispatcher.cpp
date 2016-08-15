@@ -15,8 +15,10 @@
 #include "uniqueidprovider.h"
 
 #include "internal/logjob.h"
+#include "internal/jobtimer.h"
 #include "internal/eventjob.h"
-#include "internal/eventtimerjob.h"
+#include "internal/eventtimer.h"
+#include "internal/timereventdata.h"
 
 #ifdef __APPLE__
 #include <mach/mach.h>
@@ -33,8 +35,6 @@ noOfCores(std::thread::hardware_concurrency()),
 executionFinishedNotificationLock(executionFinishedNotificationMutex),
 jobQueuePtr(new JobQueue())
 {
-	timerWheelPtr = new TimerWheel();
-	timerWheelPtr->Start();
 	std::ofstream fileStream;
 	fileStream.open("log.txt", std::ios::trunc);
 	fileStream.clear();
@@ -43,8 +43,6 @@ jobQueuePtr(new JobQueue())
 JobDispatcher::~JobDispatcher()
 {
 	std::cout<<"JobDispatcher::DTOR called. No of workers: "<<workers.size()<<std::endl;
-
-	timerWheelPtr->Stop();
 
 	WorkerPtrVector::iterator workerIter = workers.begin();
 
@@ -59,9 +57,6 @@ JobDispatcher::~JobDispatcher()
 
 	workers.clear();
 
-
-	delete timerWheelPtr;
-	timerWheelPtr = nullptr;
 	delete jobQueuePtr;
 	jobQueuePtr = nullptr;
 }
@@ -192,7 +187,9 @@ void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 
 void JobDispatcher::ExecuteJobIn(JobBase* jobPtr, const uint32_t ms)
 {
-	timerWheelPtr->AddJob(ms, jobPtr);
+	JobTimer* timerPtr = new JobTimer(jobPtr, ms);
+
+	timerStorage.StoreTimer(timerPtr);
 }
 
 void JobDispatcher::SubscribeToEvent(uint32_t eventNo, EventListenerBase* eventListenerPtr)
@@ -261,7 +258,9 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo, const EventDataBase* eventDataP
 
 void JobDispatcher::RaiseEventIn(const uint32_t eventNo, const EventDataBase* eventDataPtr, const uint32_t ms)
 {
-	timerWheelPtr->AddJob(ms, new EventTimerJob(eventNo, eventDataPtr));
+	EventTimer* eventTimerPtr = new EventTimer(eventNo, eventDataPtr, ms);
+
+	timerStorage.StoreTimer(eventTimerPtr);
 }
 
 

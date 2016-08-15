@@ -45,5 +45,5 @@ void WordFinderJob::Execute()
 	WordFinderJobFinishedEventData* eventDataPtr = new WordFinderJobFinishedEventData();
 	eventDataPtr->instanceId = instanceNo;
 
-	JobDispatcher::GetApi()->RaiseEventIn(WORD_FINDER_JOB_FINISHED, eventDataPtr, 1);
+	JobDispatcher::GetApi()->RaiseEvent(WORD_FINDER_JOB_FINISHED, eventDataPtr);
 }

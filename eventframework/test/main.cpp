@@ -46,15 +46,14 @@ int main(void)
 
 	/*
 	 * Just as an example I will let this particular program be ended by a
-	 * job that will execute in 1600ms. This should leave plenty of time for
-	 * the framework to process the word finding jobs and tests the framework's
-	 * ability to handle long running timers...
+	 * job that will execute in 300ms. This should leave plenty of time for
+	 * the framework to process the word finding jobs...
 	 *
 	 * Normally the end of the execution would be triggered by an external
 	 * event for example triggered by a window manager
 	 */
 	EndExecutionJob* endExecutionJobPtr = new EndExecutionJob();
-	const uint32_t msToSleep = 1200;
+	const uint32_t msToSleep = 300;
 	JobDispatcher::GetApi()->ExecuteJobIn(endExecutionJobPtr, msToSleep);
 
 	/*
