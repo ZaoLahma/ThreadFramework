@@ -11,6 +11,8 @@
 #include <atomic>
 #include "jobqueue.h"
 #include "threadobject.h"
+#include <thread>
+#include <condition_variable>
 
 class Worker : public ThreadObject
 {
