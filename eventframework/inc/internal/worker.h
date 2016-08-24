@@ -34,7 +34,6 @@ private:
 	uint32_t noOfJobsExecuted;
 	JobQueue* queuePtr;
 	std::mutex executionNotificationMutex;
-	std::unique_lock<std::mutex> executionLock;
 	std::condition_variable executionNotification;
 
 	std::atomic<bool> isIdling;

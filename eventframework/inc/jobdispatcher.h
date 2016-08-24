@@ -66,7 +66,6 @@ private:
 	std::mutex eventListenersAccessMutex;
 
 	std::mutex executionFinishedNotificationMutex;
-	std::unique_lock<std::mutex> executionFinishedNotificationLock;
 	std::condition_variable executionFinishedNotification;
 
 	typedef std::vector<Worker*> WorkerPtrVector;

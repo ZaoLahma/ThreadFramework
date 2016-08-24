@@ -11,7 +11,6 @@
 Worker::Worker(JobQueue* _queuePtr) :
 noOfJobsExecuted(0),
 queuePtr(_queuePtr),
-executionLock(executionNotificationMutex),
 isIdling(false)
 {
 
@@ -19,6 +18,7 @@ isIdling(false)
 
 void Worker::Notify()
 {
+	std::unique_lock<std::mutex> executionLock(executionNotificationMutex);
 	executionNotification.notify_one();
 }
 
@@ -42,6 +42,7 @@ void Worker::run()
 		{
 			return;
 		}
+		std::unique_lock<std::mutex> executionLock(executionNotificationMutex);
 		executionNotification.wait(executionLock);
 	}
 }

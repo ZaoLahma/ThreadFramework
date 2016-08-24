@@ -32,7 +32,6 @@ std::mutex JobDispatcher::instanceCreationMutex;
 
 JobDispatcher::JobDispatcher() :
 noOfCores(std::thread::hardware_concurrency()),
-executionFinishedNotificationLock(executionFinishedNotificationMutex),
 jobQueuePtr(new JobQueue())
 {
 	std::ofstream fileStream;
@@ -266,10 +265,12 @@ void JobDispatcher::RaiseEventIn(const uint32_t eventNo, const EventDataBase* ev
 
 void JobDispatcher::WaitForExecutionFinished()
 {
+	std::unique_lock<std::mutex> executionFinishedNotificationLock = std::unique_lock<std::mutex>(executionFinishedNotificationMutex);
 	executionFinishedNotification.wait(executionFinishedNotificationLock);
 }
 
 void JobDispatcher::NotifyExecutionFinished()
 {
+	std::unique_lock<std::mutex> executionFinishedNotificationLock = std::unique_lock<std::mutex>(executionFinishedNotificationMutex);
 	executionFinishedNotification.notify_one();
 }
