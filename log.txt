@@ -1,0 +1,5 @@
+[2016-08-24 21:38:00.512043000]This is a test log entry with an int: 98
+[2016-08-24 21:38:00.512919000]String: this is a test string where we try to find the word test, Word: test, No of occurrences: 2
+[2016-08-24 21:38:00.512942000]String: here we try to find the word word for the sake of finding word, Word: word, No of occurrences: 3
+[2016-08-24 21:38:00.512971000]String: Another semi random sentence just to get a semi parallel execution. Why not, I must ask., Word: sentence, No of occurrences: 1
+[2016-08-24 21:38:00.512999000]String: There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel., Word: parallel, No of occurrences: 3
