@@ -32,7 +32,7 @@ std::mutex JobDispatcher::instanceCreationMutex;
 
 JobDispatcher::JobDispatcher() :
 noOfCores(std::thread::hardware_concurrency()),
-jobQueuePtr(new JobQueue())
+jobQueueContainer(new JobQueueWorkerContainer())
 {
 	std::ofstream fileStream;
 	fileStream.open("log.txt", std::ios::trunc);
@@ -41,23 +41,7 @@ jobQueuePtr(new JobQueue())
 
 JobDispatcher::~JobDispatcher()
 {
-	std::cout<<"JobDispatcher::DTOR called. No of workers: "<<workers.size()<<std::endl;
-
-	WorkerPtrVector::iterator workerIter = workers.begin();
-
-	uint32_t index = 0;
-	for( ; workerIter != workers.end(); ++workerIter)
-	{
-		std::cout<<"Worker: "<<index<<" executed "<<(*workerIter)->GetNoOfJobsExecuted()<<" jobs."<<std::endl;
-		(*workerIter)->Stop();
-		delete (*workerIter);
-		index++;
-	}
-
-	workers.clear();
-
-	delete jobQueuePtr;
-	jobQueuePtr = nullptr;
+	delete jobQueueContainer;
 }
 
 JobDispatcher* JobDispatcher::GetApi()
@@ -157,31 +141,7 @@ std::string JobDispatcher::GetTimeStamp()
 
 void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 {
-	/*
-	 * Queue job and notify first idling worker (if any)
-	 */
-	jobQueuePtr->QueueJob(jobPtr);
-
-	std::lock_guard<std::mutex> workerCreationLock(workerCreationMutex);
-	WorkerPtrVector::iterator workerIter = workers.begin();
-
-	for( ; workerIter != workers.end(); ++workerIter)
-	{
-		if((*workerIter)->IsIdling())
-		{
-			(*workerIter)->Notify();
-			return;
-		}
-	}
-
-	/*
-	 * If no idling worker found, we allocate a new one.
-	 * The framework will adjust upwards to the worst
-	 * case, but never downwards.
-	 */
-	Worker* worker = new Worker(jobQueuePtr);
-	worker->Start();
-	workers.push_back(worker);
+	jobQueueContainer->ScheduleJob(0, jobPtr);
 }
 
 void JobDispatcher::ExecuteJobIn(JobBase* jobPtr, const uint32_t ms)

@@ -19,7 +19,8 @@
 
 #include "eventlistenerbase.h"
 #include "internal/timerstorage.h"
-#include "internal/worker.h"
+#include "internal/jobqueueworkercontainer.h"
+
 #include "jobbase.h"
 
 #define TIMEOUT_EVENT_ID 0x0 //Move me to appropriate place
@@ -61,18 +62,12 @@ private:
 	//Private attrbutes
 	uint32_t noOfCores;
 
-	std::mutex workerCreationMutex;
-
 	std::mutex eventListenersAccessMutex;
 
 	std::mutex executionFinishedNotificationMutex;
 	std::condition_variable executionFinishedNotification;
 
-	typedef std::vector<Worker*> WorkerPtrVector;
-
-	WorkerPtrVector workers;
-
-	JobQueue* jobQueuePtr;
+	JobQueueWorkerContainer* jobQueueContainer;
 
 	EventNoToEventListenersMap eventEventListeners;
 

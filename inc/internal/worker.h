@@ -41,6 +41,6 @@ private:
 	void run();
 };
 
-
+typedef std::vector<Worker*> WorkerPtrVectorT;
 
 #endif /* INC_INTERNAL_WORKER_H_ */
