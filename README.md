@@ -20,10 +20,10 @@ JobDispatcher::GetApi()->ExecuteJobInGroup(new Job(), PRIO_EXEC_GROUP);
 <br>
 <br>
 Subscribe to an event:<br>
-uint32_t EVENT_NO = 10;
+uint32_t EVENT_NO = 10;<br>
 JobDispatcher::GetApi()->SubscribeToEvent(EVENT_NO, this);
 <br>
 <br>
 Raise an event:<br>
-uint32_t EVENT_NO = 10;
+uint32_t EVENT_NO = 10;<br>
 JobDispatcher::GetApi()->RaiseEvent(EVENT_NO, new EventData());
