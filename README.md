@@ -29,3 +29,7 @@ JobDispatcher::GetApi()->SubscribeToEvent(EVENT_NO, this);
 Raise an event:<br>
 uint32_t EVENT_NO = 10;<br>
 JobDispatcher::GetApi()->RaiseEvent(EVENT_NO, new EventData());
+<br>
+<br>
+Still confused? Have a look at the test of the framework where it's used for finding words in strings in parallel!<br>
+https://github.com/ZaoLahma/ThreadFramework/tree/master/test
