@@ -8,19 +8,31 @@
 #include "../inc/internal/jobqueueworkercontainer.h"
 #include <iostream>
 
+JobQueueWorkerContainer::JobQueueWorkerContainer(uint32_t noOfCores)
+{
+	/*
+	 * Default behavior is to set up an exec group with as many threads
+	 * as there are cores.
+	 *
+	 * Not sure yet if this is a great idea. Will see...
+	 */
+	CreateExecGroup(0, noOfCores);
+}
+
 JobQueueWorkerContainer::~JobQueueWorkerContainer()
 {
 	JobQueueMapT::iterator queueIter = queueMap.begin();
 
 	for( ; queueIter != queueMap.end(); ++queueIter)
 	{
+		std::cout<<"Exec group: "<<queueIter->first<<std::endl;
 		WorkerPtrVectorT::iterator workers = queueIter->second.workers.begin();
 
 		uint32_t index = 0;
 		for(; workers != queueIter->second.workers.end(); ++workers)
 		{
 			(*workers)->Stop();
-			std::cout<<"Worker: "<<index<<" executed "<<(*workers)->GetNoOfJobsExecuted()<<" jobs."<<std::endl;
+			std::cout<<"  Worker: "<<index<<" executed "<<(*workers)->GetNoOfJobsExecuted()<<" jobs."<<std::endl;
 			delete *workers;
 			index++;
 		}
@@ -80,7 +92,6 @@ void JobQueueWorkerContainer::ScheduleJob(uint32_t groupId, JobBase* jobPtr)
 void JobQueueWorkerContainer::CreateExecGroup(uint32_t groupId, uint32_t maxNoOfThreads)
 {
 	std::lock_guard<std::mutex> jobQueueWorkerDataCreationLock(jobQueueWorkerDataCreationMutex);
-	printf("Creating exec group with id: %d\n", groupId);
 	JobQueueMapT::iterator queueIter = queueMap.find(groupId);
 	if(queueIter == queueMap.end())
 	{
@@ -89,5 +100,9 @@ void JobQueueWorkerContainer::CreateExecGroup(uint32_t groupId, uint32_t maxNoOf
 		jobQueueWorkerData.maxNoOfWorkers = maxNoOfThreads;
 
 		queueMap[groupId] = jobQueueWorkerData;
+	}
+	else
+	{
+		queueIter->second.maxNoOfWorkers = maxNoOfThreads;
 	}
 }

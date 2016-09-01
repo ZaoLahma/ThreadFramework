@@ -7,6 +7,7 @@
 
 
 #include "wordfinder.h"
+#include "exec_groups.h"
 
 #include <iostream>
 
@@ -22,7 +23,14 @@ instanceNo(_instanceNo)
 
 	jobPtr->SetJobData(&jobData);
 
-	JobDispatcher::GetApi()->ExecuteJob(jobPtr);
+	uint32_t execGroup = LOW_PRIO_EXEC_GROUP;
+
+	if(instanceNo == 2 || instanceNo == 3 || instanceNo == 4)
+	{
+		execGroup = HIGH_PRIO_EXEC_GROUP;
+	}
+
+	JobDispatcher::GetApi()->ExecuteJobInGroup(jobPtr, execGroup);
 }
 
 void WordFinder::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr)

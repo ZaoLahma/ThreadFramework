@@ -32,7 +32,7 @@ std::mutex JobDispatcher::instanceCreationMutex;
 
 JobDispatcher::JobDispatcher() :
 noOfCores(std::thread::hardware_concurrency()),
-jobQueueContainer(new JobQueueWorkerContainer())
+jobQueueContainer(new JobQueueWorkerContainer(noOfCores))
 {
 	std::ofstream fileStream;
 	fileStream.open("log.txt", std::ios::trunc);
@@ -139,9 +139,19 @@ std::string JobDispatcher::GetTimeStamp()
     return std::string(buf);
 }
 
+void JobDispatcher::AddExecGroup(uint32_t groupId, uint32_t maxNoOfThreads)
+{
+	jobQueueContainer->AddExecGroup(groupId, maxNoOfThreads);
+}
+
 void JobDispatcher::ExecuteJob(JobBase* jobPtr)
 {
-	jobQueueContainer->ScheduleJob(0, jobPtr);
+	jobQueueContainer->ScheduleJob(DEFAULT_EXEC_GROUP_ID, jobPtr);
+}
+
+void JobDispatcher::ExecuteJobInGroup(JobBase* jobPtr, uint32_t groupId)
+{
+	jobQueueContainer->ScheduleJob(groupId, jobPtr);
 }
 
 void JobDispatcher::ExecuteJobIn(JobBase* jobPtr, const uint32_t ms)

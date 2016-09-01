@@ -8,6 +8,7 @@
 #include "wordfinder.h"
 #include <iostream>
 #include "jobbase.h"
+#include "exec_groups.h"
 
 class EndExecutionJob : public JobBase
 {
@@ -23,8 +24,26 @@ int main(void)
 	JobDispatcher::GetApi()->Log("This is a test log entry with an int: %d", 98);
 
 	/*
+	 * Limit the default exec group to 1 thread.
+	 */
+	JobDispatcher::GetApi()->AddExecGroup(DEFAULT_EXEC_GROUP_ID, 1);
+
+	/*
+	 * Create a "high prio" exec group with a maximum of 2 threads
+	 */
+	JobDispatcher::GetApi()->AddExecGroup(HIGH_PRIO_EXEC_GROUP, 2);
+
+	/*
+	 * Create a "low prio" exec group with a maximum of 1 thread
+	 */
+	JobDispatcher::GetApi()->AddExecGroup(LOW_PRIO_EXEC_GROUP, 1);
+
+	/*
 	 * In this example instanceNo is used to make sure each WordFinder instance
 	 * will raise its own unique event.
+	 *
+	 * The jobs related to finding the words are executed in the WordFinder
+	 * constructor.
 	 */
 	uint32_t instanceNo = 0;
 
@@ -42,6 +61,18 @@ int main(void)
 
 	WordFinder wf_4("There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel.",
 			        "parallel",
+					instanceNo++);
+
+	WordFinder wf_5("Indeed, this wouldn't be much of a test case without more words to find!",
+			        "Indeed",
+					instanceNo++);
+
+	WordFinder wf_6("Programming is heaven and hell, strangely at the same time.",
+			        "heaven",
+					instanceNo++);
+
+	WordFinder wf_7("There are many ways in which one can make mistakes while programming. Tests must be written.",
+			        "mistakes",
 					instanceNo++);
 
 	/*

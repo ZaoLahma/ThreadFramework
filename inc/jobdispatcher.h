@@ -24,6 +24,7 @@
 #include "jobbase.h"
 
 #define TIMEOUT_EVENT_ID 0x0 //Move me to appropriate place
+#define DEFAULT_EXEC_GROUP_ID 0
 
 class JobDispatcher
 {
@@ -38,7 +39,11 @@ public:
 	//API
 	void Log(const char* formatString, ...);
 
+	void AddExecGroup(uint32_t groupId, uint32_t maxNoOfThreads);
+
 	void ExecuteJob(JobBase* jobPtr);
+
+	void ExecuteJobInGroup(JobBase* jobPtr, uint32_t groupId);
 
 	void ExecuteJobIn(JobBase* jobPtr, const uint32_t ms);
 
