@@ -8,14 +8,15 @@
 #include "internal/jobtimer.h"
 #include "jobdispatcher.h"
 
-JobTimer::JobTimer(JobBase* _jobPtr, const uint32_t _ms) :
+JobTimer::JobTimer(JobBase* _jobPtr, const uint32_t _ms, uint32_t _groupId) :
 TimerBase(_ms),
-jobPtr(_jobPtr)
+jobPtr(_jobPtr),
+groupId(_groupId)
 {
 
 }
 
 void JobTimer::TimerFunction()
 {
-	JobDispatcher::GetApi()->ExecuteJob(jobPtr);
+	JobDispatcher::GetApi()->ExecuteJobInGroup(jobPtr, groupId);
 }

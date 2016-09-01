@@ -47,6 +47,8 @@ public:
 
 	void ExecuteJobIn(JobBase* jobPtr, const uint32_t ms);
 
+	void ExecuteJobInGroupIn(JobBase* jobPtr, uint32_t groupId, uint32_t ms);
+
 	void SubscribeToEvent(const uint32_t eventNo, EventListenerBase* eventListenerPtr);
 
 	void UnsubscribeToEvent(const uint32_t eventNo, EventListenerBase* eventListenerPtr);

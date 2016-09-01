@@ -161,6 +161,13 @@ void JobDispatcher::ExecuteJobIn(JobBase* jobPtr, const uint32_t ms)
 	timerStorage.StoreTimer(timerPtr);
 }
 
+void JobDispatcher::ExecuteJobInGroupIn(JobBase* jobPtr, uint32_t groupId, uint32_t ms)
+{
+	JobTimer* timerPtr = new JobTimer(jobPtr, ms, groupId);
+
+	timerStorage.StoreTimer(timerPtr);
+}
+
 void JobDispatcher::SubscribeToEvent(uint32_t eventNo, EventListenerBase* eventListenerPtr)
 {
 	std::lock_guard<std::mutex> subscribersLock(eventListenersAccessMutex);
