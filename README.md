@@ -9,7 +9,9 @@ Simply put, a number of worker threads will execute jobs which they take from a 
 
 EXAMPLES PLEASE?!
 <br>
-Righteo. Create exec group (a number of threads executing jobs from the same queue):<br>
+Righteo.<br>
+<br>
+Create exec group (a number of threads executing jobs from the same queue):<br>
 const uint32_t PRIO_EXEC_GROUP = 1;<br>
 uint32_t maxNoOfThreads = 2;<br>
 JobDispatcher::GetApi()->AddExecGroup(PRIO_EXEC_GROUP, maxNoOfThreads);
