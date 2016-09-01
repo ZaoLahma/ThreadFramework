@@ -1,13 +1,29 @@
 # MultiThreadEventFramework
-A C++11 (should compile for Win and *NIX) multi threaded event and job execution framework with an easy interface which can be used for parallell programming
+WHAT?
+<br>
+A C++11 (should compile for Win and *NIX) multi threaded event and job execution framework with an easy interface which can be used for parallell programming. The framework is still under development.
 
-The framework was developed with one goal in mind; everything it does should be done in parallel. For the most part, it does. However, scheduling of jobs and raising events is protected by guard locks to ensure thread safety.
+HOW?
+<br>
+Simply put, a number of worker threads will execute jobs which they take from a queue. The threads can be grouped together so that for example one worker thread executes jobs from one job queue, while three worker threads execute jobs from another job queue.
 
-The amount of worker threads will automatically be adjusted for the worst case as follows: <br>
-If no idling worker thread is found when a job is scheduled, a new one is created. This means it's perfectly fine to let a job take time as that will not be affecting the execution of other jobs (for as long as the long running job is not CPU-intensive, of course...).
+EXAMPLES PLEASE?!
+<br>
+Righteo. Create exec group (a number of threads executing jobs from the same queue):<br>
+const uint32_t PRIO_EXEC_GROUP = 1;<br>
+uint32_t maxNoOfThreads = 2;<br>
+JobDispatcher::GetApi()->AddExecGroup(PRIO_EXEC_GROUP, maxNoOfThreads);
 <br>
 <br>
-Currently there's no mechanism removing workers when they are no longer needed. Not sure if such functionality will be included in the future.
+Schedule a job in a group:<br>
+JobDispatcher::GetApi()->ExecuteJobInGroup(new Job(), PRIO_EXEC_GROUP);
 <br>
 <br>
-Check out my https://github.com/ZaoLahma/simple2game project to see how the framework can be used.
+Subscribe to an event:<br>
+uint32_t EVENT_NO = 10;
+JobDispatcher::GetApi()->SubscribeToEvent(EVENT_NO, this);
+<br>
+<br>
+Raise an event:<br>
+uint32_t EVENT_NO = 10;
+JobDispatcher::GetApi()->RaiseEvent(EVENT_NO, new EventData());
