@@ -32,11 +32,26 @@ std::mutex JobDispatcher::instanceCreationMutex;
 
 JobDispatcher::JobDispatcher() :
 noOfCores(std::thread::hardware_concurrency()),
-jobQueueContainer(new JobQueueWorkerContainer(noOfCores))
+jobQueueContainer(new JobQueueWorkerContainer())
 {
 	std::ofstream fileStream;
 	fileStream.open("log.txt", std::ios::trunc);
 	fileStream.clear();
+
+	/*
+	 * Nothing from within the framework is executed on the
+	 * default exec group. It's for legacy applications and
+	 * has an unlimited max amount of threads.
+	 */
+	jobQueueContainer->AddExecGroup(DEFAULT_EXEC_GROUP_ID, 0);
+
+	/*
+	 * Create logging exec group with one thread by default
+	 * and an event exec group with 2 threads. These values
+	 * can be overridden by a later call to AddExecGroup.
+	 */
+	jobQueueContainer->AddExecGroup(LOGGING_EXEC_GROUP_ID, 1);
+	jobQueueContainer->AddExecGroup(EVENT_EXEC_GROUP_ID, 2);
 }
 
 JobDispatcher::~JobDispatcher()
@@ -83,7 +98,7 @@ void JobDispatcher::Log(const char* formatString, ...)
 
 	stringToPrint<<std::string(buf)<<std::endl;
 
-	JobDispatcher::GetApi()->ExecuteJob(new LogJob(stringToPrint.str()));
+	JobDispatcher::GetApi()->ExecuteJobInGroup(new LogJob(stringToPrint.str()), LOGGING_EXEC_GROUP_ID);
 }
 
 std::string JobDispatcher::GetTimeStamp()
@@ -225,7 +240,7 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo, const EventDataBase* eventDataP
 		{
 			EventJob* eventJob = new EventJob(*eventListenerIter, eventNo, eventDataPtr);
 
-			JobDispatcher::GetApi()->ExecuteJob(eventJob);
+			JobDispatcher::GetApi()->ExecuteJobInGroup(eventJob, EVENT_EXEC_GROUP_ID);
 		}
 		delete eventDataPtr;
 		eventDataPtr = nullptr;

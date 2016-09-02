@@ -8,15 +8,9 @@
 #include "../inc/internal/jobqueueworkercontainer.h"
 #include <iostream>
 
-JobQueueWorkerContainer::JobQueueWorkerContainer(uint32_t noOfCores)
+JobQueueWorkerContainer::JobQueueWorkerContainer()
 {
-	/*
-	 * Default behavior is to set up an exec group with as many threads
-	 * as there are cores.
-	 *
-	 * Not sure yet if this is a great idea. Will see...
-	 */
-	CreateExecGroup(0, noOfCores);
+
 }
 
 JobQueueWorkerContainer::~JobQueueWorkerContainer()
@@ -25,7 +19,10 @@ JobQueueWorkerContainer::~JobQueueWorkerContainer()
 
 	for( ; queueIter != queueMap.end(); ++queueIter)
 	{
-		std::cout<<"Exec group: "<<queueIter->first<<std::endl;
+		if(0 != queueIter->second.workers.size())
+		{
+			std::cout<<"Exec group: "<<queueIter->first<<std::endl;
+		}
 		WorkerPtrVectorT::iterator workers = queueIter->second.workers.begin();
 
 		uint32_t index = 0;

@@ -40,12 +40,6 @@ int main(void)
 
 
 	/*
-	 * This group is used to test executing a job in a group after
-	 * a certain time.
-	 */
-	JobDispatcher::GetApi()->AddExecGroup(EXIT_JOB_EXEC_GROUP, 1);
-
-	/*
 	 * In this example instanceNo is used to make sure each WordFinder instance
 	 * will raise its own unique event.
 	 *
@@ -92,6 +86,10 @@ int main(void)
 	 */
 	EndExecutionJob* endExecutionJobPtr = new EndExecutionJob();
 	const uint32_t msToSleep = 300;
+	/*
+	 * Note how "EXIT_JOB_EXEC_GROUP" is created when it's used. No need to
+	 * define exec groups prior to usage is default behaviour is good enough.
+	 */
 	JobDispatcher::GetApi()->ExecuteJobInGroupIn(endExecutionJobPtr, EXIT_JOB_EXEC_GROUP, msToSleep);
 
 	/*
