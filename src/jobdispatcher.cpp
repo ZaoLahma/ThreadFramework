@@ -89,11 +89,11 @@ void JobDispatcher::Log(const char* formatString, ...)
 
 	stringToPrint<<GetTimeStamp();
 
-	char buf[1024];
+	char buf[2048];
 
 	va_list args;
-	va_start (args, formatString);
-	vsprintf (buf, formatString, args);
+	va_start(args, formatString);
+	vsprintf(buf, formatString, args);
 	va_end (args);
 
 	stringToPrint<<std::string(buf)<<std::endl;
