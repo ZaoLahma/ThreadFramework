@@ -1,25 +1,24 @@
 CCOMMAND = g++
 CFLAGS = -Wall -c -Wextra --std=c++11 
 LINKARGS = -lpthread
-SRC_FILES = ./src/*.cpp ./src/internal/*.cpp
-TEST_FILES = ./test/*.cpp
-INC_DIRS = ./inc
-EXE_NAME = event_framework
+SOURCES = $(wildcard src/*.cpp)
+SOURCES += $(wildcard src/internal/*.cpp)
+TEST_SOURCES += $(wildcard test/*.cpp)
+OBJECTS = $(SOURCES:.cpp=.o)
+TEST_OBJECTS = $(TEST_SOURCES:.cpp=.o)
+INC_DIRS = -I./inc
+EXE_NAME = thread_framework
 
-all: test link
 
-test: compile
-	$(CCOMMAND) $(CFLAGS) -I$(INC_DIRS) $(TEST_FILES)
+$(EXE_NAME): $(OBJECTS) $(TEST_OBJECTS)
+	$(CCOMMAND) $(OBJECTS) $(TEST_OBJECTS) $(LINKARGS) -o $(EXE_NAME)
 
-compile:
-	$(CCOMMAND) $(CFLAGS) -I$(INC_DIRS) $(SRC_FILES)
-	
-link:
-	$(CCOMMAND) -o $(EXE_NAME) ./*.o $(LINKARGS)
-	
-lib: compile
-	ar rvs jobdispatcher.a ./*.o
-	
+%.o: %.cpp
+	$(CCOMMAND) $(INC_DIRS) -c $(CFLAGS) $< -o $@
+
+lib: $(OBJECTS)
+	ar rvs jobdispatcher.a $(OBJECTS)
+
 clean:
-	rm -rf ./*.o
-	rm ./$(EXE_NAME)
+	rm -f $(EXE_NAME) $(OBJECTS)
+	
