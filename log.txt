@@ -1,8 +1,8 @@
-[2016-09-12 07:50:13.332234000]This is a test log entry with an int: 98
-[2016-09-12 07:50:13.333020000]String: this is a test string where we try to find the word test, Word: test, No of occurrences: 2
-[2016-09-12 07:50:13.333061000]String: Another semi random sentence just to get a semi parallel execution. Why not, I must ask., Word: sentence, No of occurrences: 1
-[2016-09-12 07:50:13.333122000]String: here we try to find the word word for the sake of finding word, Word: word, No of occurrences: 3
-[2016-09-12 07:50:13.333174000]String: There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel., Word: parallel, No of occurrences: 3
-[2016-09-12 07:50:13.333196000]String: Indeed, this wouldn't be much of a test case without more words to find!, Word: Indeed, No of occurrences: 1
-[2016-09-12 07:50:13.333225000]String: Programming is heaven and hell, strangely at the same time., Word: heaven, No of occurrences: 1
-[2016-09-12 07:50:13.333254000]String: There are many ways in which one can make mistakes while programming. Tests must be written., Word: mistakes, No of occurrences: 1
+[2016-09-12 07:55:17.642322000]This is a test log entry with an int: 98
+[2016-09-12 07:55:17.643292000]String: this is a test string where we try to find the word test, Word: test, No of occurrences: 2
+[2016-09-12 07:55:17.643320000]String: Another semi random sentence just to get a semi parallel execution. Why not, I must ask., Word: sentence, No of occurrences: 1
+[2016-09-12 07:55:17.643419000]String: There are many traps when doing things in parallel. Doing things in parallel can be a very quick way of making things go wrong, in parallel., Word: parallel, No of occurrences: 3
+[2016-09-12 07:55:17.643429000]String: here we try to find the word word for the sake of finding word, Word: word, No of occurrences: 3
+[2016-09-12 07:55:17.643467000]String: Indeed, this wouldn't be much of a test case without more words to find!, Word: Indeed, No of occurrences: 1
+[2016-09-12 07:55:17.643494000]String: Programming is heaven and hell, strangely at the same time., Word: heaven, No of occurrences: 1
+[2016-09-12 07:55:17.643522000]String: There are many ways in which one can make mistakes while programming. Tests must be written., Word: mistakes, No of occurrences: 1

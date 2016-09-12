@@ -20,5 +20,5 @@ lib: $(OBJECTS)
 	ar rvs jobdispatcher.a $(OBJECTS)
 
 clean:
-	rm -f $(EXE_NAME) $(OBJECTS)
+	rm -f $(EXE_NAME) $(OBJECTS) $(TEST_OBJECTS)
 	
