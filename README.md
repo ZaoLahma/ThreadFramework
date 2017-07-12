@@ -29,7 +29,7 @@ JobDispatcher::GetApi()->SubscribeToEvent(EVENT_NO, this);
 <br>
 Raise an event:<br>
 uint32_t EVENT_NO = 10;<br>
-std::shared_ptr<EventData> eventData = std::make_shared<EventData>();<br>
+std::shared_ptr<EventData> eventData = std::make_shared\<EventData>();<br>
 JobDispatcher::GetApi()->RaiseEvent(EVENT_NO, eventData);
 <br>
 <br>
