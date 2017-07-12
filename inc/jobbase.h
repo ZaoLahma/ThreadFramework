@@ -9,6 +9,7 @@
 #define INC_JOBBASE_H_
 
 #include <vector>
+#include <memory>
 
 class JobDataBase
 {
@@ -24,16 +25,16 @@ class JobBase
 public:
 	virtual ~JobBase();
 
-	void SetJobData(JobDataBase* _dataPtr);
+	void SetJobData(std::shared_ptr<JobDataBase> _dataPtr);
 
 	virtual void Execute() = 0;
 protected:
-	JobDataBase* dataPtr;
+	std::shared_ptr<JobDataBase> dataPtr;
 
 private:
 
 };
 
-typedef std::vector<JobBase*> JobBasePtrVectorT;
+typedef std::vector<std::shared_ptr<JobBase>> JobBasePtrVectorT;
 
 #endif /* INC_JOBBASE_H_ */

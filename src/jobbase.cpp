@@ -12,7 +12,7 @@ JobBase::~JobBase()
 
 }
 
-void JobBase::SetJobData(JobDataBase* _dataPtr)
+void JobBase::SetJobData(std::shared_ptr<JobDataBase> _dataPtr)
 {
 	dataPtr = _dataPtr;
 }

@@ -19,12 +19,12 @@ class WordFinder : public EventListenerBase
 public:
 	WordFinder(const std::string& string, const std::string& wordToFind, const uint32_t _instanceNo);
 
-	void HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr);
+	void HandleEvent(const uint32_t eventNo, std::shared_ptr<EventDataBase> dataPtr);
 
 private:
 	WordFinder();
 
-	WordFinderData jobData;
+	std::shared_ptr<WordFinderData> jobData;
 
 	const uint32_t instanceNo;
 

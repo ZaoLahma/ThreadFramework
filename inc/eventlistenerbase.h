@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <map>
+#include <memory>
 
 #include "eventdatabase.h"
 
@@ -17,7 +18,7 @@ class EventListenerBase
 {
 public:
 	virtual ~EventListenerBase();
-	virtual void HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr) = 0;
+	virtual void HandleEvent(const uint32_t eventNo, std::shared_ptr<EventDataBase> dataPtr) = 0;
 
 protected:
 

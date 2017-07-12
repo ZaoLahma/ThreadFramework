@@ -24,13 +24,13 @@ TimerStorage::~TimerStorage()
 
 	for( ; timerIter != timers.end(); ++timerIter)
 	{
-		delete timerIter->second;
+		timerIter->second = nullptr;
 	}
 
 	timers.clear();
 }
 
-void TimerStorage::StoreTimer(TimerBase* _timer)
+void TimerStorage::StoreTimer(std::shared_ptr<TimerBase> _timer)
 {
 	if(false == subscribedToEvent)
 	{
@@ -56,11 +56,11 @@ void TimerStorage::StoreTimer(TimerBase* _timer)
 	_timer->Start();
 }
 
-void TimerStorage::HandleEvent(const uint32_t _eventNo, const EventDataBase* _dataPtr)
+void TimerStorage::HandleEvent(const uint32_t _eventNo, std::shared_ptr<EventDataBase> _dataPtr)
 {
 	if(TIMEOUT_EVENT_ID == _eventNo)
 	{
-		const TimerEventData* eventDataPtr = static_cast<const TimerEventData*>(_dataPtr);
+		std::shared_ptr<TimerEventData> eventDataPtr = std::static_pointer_cast<TimerEventData>(_dataPtr);
 
 		std::unique_lock<std::mutex> timersMapLock(timerMutex);
 
@@ -68,7 +68,7 @@ void TimerStorage::HandleEvent(const uint32_t _eventNo, const EventDataBase* _da
 
 		if(timers.end() != timerIter)
 		{
-			delete timerIter->second;
+			timerIter->second = nullptr;
 			timers.erase(timerIter);
 		}
 	}

@@ -19,7 +19,6 @@
 class WordFinderJobFinishedEventData : public EventDataBase
 {
 public:
-	EventDataBase* clone() const;
 	uint32_t instanceId;
 
 protected:

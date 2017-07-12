@@ -18,8 +18,8 @@ public:
 
 	~JobQueue();
 
-	void QueueJob(JobBase* jobPtr);
-	JobBase* GetNextJob();
+	void QueueJob(std::shared_ptr<JobBase> jobPtr);
+	 std::shared_ptr<JobBase> GetNextJob();
 protected:
 private:
 	std::mutex queueAccessMutex;

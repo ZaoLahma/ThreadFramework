@@ -35,7 +35,7 @@ private:
 	TimerBase();
 };
 
-typedef std::map<uint32_t, TimerBase*> TimerBaseMap;
+typedef std::map<uint32_t, std::shared_ptr<TimerBase>> TimerBaseMap;
 
 
 

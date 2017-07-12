@@ -18,8 +18,8 @@ class TimerStorage : public EventListenerBase
 public:
 	TimerStorage();
 	~TimerStorage();
-	void StoreTimer(TimerBase* _timer);
-	void HandleEvent(const uint32_t _eventNo, const EventDataBase* _dataPtr);
+	void StoreTimer(std::shared_ptr<TimerBase> _timer);
+	void HandleEvent(const uint32_t _eventNo, std::shared_ptr<EventDataBase> _dataPtr);
 
 protected:
 
