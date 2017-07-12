@@ -13,7 +13,6 @@ class EventDataBase
 {
 public:
 	virtual ~EventDataBase() {}
-	virtual EventDataBase* clone() const = 0;
 protected:
 
 public:

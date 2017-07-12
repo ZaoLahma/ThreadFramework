@@ -16,8 +16,6 @@ class TimerEventData : public EventDataBase
 public:
 	TimerEventData(const uint32_t);
 
-	EventDataBase* clone() const;
-
 	uint32_t GetTimerId() const;
 
 protected:

@@ -16,7 +16,7 @@
 class EventTimer : public TimerBase
 {
 public:
-	EventTimer(const uint32_t eventNo, const EventDataBase* _dataPtr, const uint32_t _ms);
+	EventTimer(const uint32_t eventNo, std::shared_ptr<EventDataBase> _dataPtr, const uint32_t _ms);
 	void TimerFunction();
 
 protected:
@@ -24,7 +24,7 @@ protected:
 private:
 	EventTimer();
 	const uint32_t eventNo;
-	const EventDataBase* eventDataPtr;
+	std::shared_ptr<EventDataBase> eventDataPtr;
 };
 
 

@@ -17,8 +17,3 @@ uint32_t TimerEventData::GetTimerId() const
 {
 	return timerId;
 }
-
-EventDataBase* TimerEventData::clone() const
-{
-	return new TimerEventData(*this);
-}

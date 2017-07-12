@@ -17,7 +17,7 @@ class EventJob : public JobBase
 public:
 	EventJob(EventListenerBase* _eventListenerPtr,
 			 const uint32_t _eventNo,
-			 const EventDataBase* _eventDataPtr);
+			 std::shared_ptr<EventDataBase> _eventDataPtr);
 
 	void Execute();
 protected:
@@ -28,7 +28,7 @@ private:
 
 	const uint32_t eventNo;
 
-	EventDataBase* eventDataPtr;
+	std::shared_ptr<EventDataBase> eventDataPtr;
 };
 
 

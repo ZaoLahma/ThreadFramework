@@ -228,7 +228,7 @@ void JobDispatcher::UnsubscribeToEvent(uint32_t eventNo, EventListenerBase* even
 	}
 }
 
-void JobDispatcher::RaiseEvent(uint32_t eventNo, const EventDataBase* eventDataPtr)
+void JobDispatcher::RaiseEvent(uint32_t eventNo, std::shared_ptr<EventDataBase> eventDataPtr)
 {
 	std::lock_guard<std::mutex> subscribersLock(eventListenersAccessMutex);
 
@@ -244,12 +244,11 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo, const EventDataBase* eventDataP
 
 			JobDispatcher::GetApi()->ExecuteJobInGroup(eventJob, EVENT_EXEC_GROUP_ID);
 		}
-		delete eventDataPtr;
 		eventDataPtr = nullptr;
 	}
 }
 
-void JobDispatcher::RaiseEventIn(const uint32_t eventNo, const EventDataBase* eventDataPtr, const uint32_t ms)
+void JobDispatcher::RaiseEventIn(const uint32_t eventNo, std::shared_ptr<EventDataBase> eventDataPtr, const uint32_t ms)
 {
 	EventTimer* eventTimerPtr = new EventTimer(eventNo, eventDataPtr, ms);
 

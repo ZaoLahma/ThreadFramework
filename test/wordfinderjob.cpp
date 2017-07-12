@@ -10,11 +10,6 @@
 
 #include <iostream>
 
-EventDataBase* WordFinderJobFinishedEventData::clone() const
-{
-	return new WordFinderJobFinishedEventData(*this);
-}
-
 WordFinderData::WordFinderData(const std::string& _wordString,
 			                   const std::string& _wordToFind) :
 wordString(_wordString),
@@ -32,7 +27,7 @@ instanceNo(_instanceNo)
 
 void WordFinderJob::Execute()
 {
-	WordFinderData* wordFinderDataPtr = static_cast<WordFinderData*>(dataPtr);
+	std::shared_ptr<WordFinderData> wordFinderDataPtr = std::static_pointer_cast<WordFinderData>(dataPtr);
 
 	std::size_t pos = wordFinderDataPtr->wordString.find(wordFinderDataPtr->wordToFind);
 
@@ -42,7 +37,7 @@ void WordFinderJob::Execute()
 		pos = wordFinderDataPtr->wordString.find(wordFinderDataPtr->wordToFind, pos + 1);
 	}
 
-	WordFinderJobFinishedEventData* eventDataPtr = new WordFinderJobFinishedEventData();
+	std::shared_ptr<WordFinderJobFinishedEventData> eventDataPtr = std::make_shared<WordFinderJobFinishedEventData>();
 	eventDataPtr->instanceId = instanceNo;
 
 	JobDispatcher::GetApi()->RaiseEvent(WORD_FINDER_JOB_FINISHED, eventDataPtr);

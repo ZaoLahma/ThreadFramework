@@ -30,7 +30,7 @@ void TimerBase::run()
 		this->TimerFunction();
 
 		//Notify timer triggered
-		TimerEventData* eventDataPtr = new TimerEventData(timerId);
+		std::shared_ptr<EventDataBase> eventDataPtr = std::make_shared<TimerEventData>(timerId);
 		JobDispatcher::GetApi()->RaiseEvent(TIMEOUT_EVENT_ID, eventDataPtr);
 	}
 }

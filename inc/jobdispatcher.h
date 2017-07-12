@@ -55,9 +55,9 @@ public:
 
 	void UnsubscribeToEvent(const uint32_t eventNo, EventListenerBase* eventListenerPtr);
 
-	void RaiseEvent(const uint32_t eventNo, const EventDataBase* eventDataPtr);
+	void RaiseEvent(const uint32_t eventNo, std::shared_ptr<EventDataBase> eventDataPtr);
 
-	void RaiseEventIn(const uint32_t eventNo, const EventDataBase* eventDataPtr, const uint32_t ms);
+	void RaiseEventIn(const uint32_t eventNo, std::shared_ptr<EventDataBase> eventDataPtr, const uint32_t ms);
 
 	void WaitForExecutionFinished();
 

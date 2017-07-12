@@ -8,23 +8,17 @@
 #include "internal/eventjob.h"
 
 EventJob::EventJob(EventListenerBase* _eventListenerPtr,
-		                          const uint32_t _eventNo,
-								  const EventDataBase* _eventDataPtr) :
+				   const uint32_t _eventNo,
+				   std::shared_ptr<EventDataBase> _eventDataPtr) :
 eventListenerPtr(_eventListenerPtr),
 eventNo(_eventNo),
-eventDataPtr(nullptr)
+eventDataPtr(_eventDataPtr)
 {
-	if(nullptr != _eventDataPtr)
-	{
-		eventDataPtr = _eventDataPtr->clone();
-	}
+
 }
 
 void EventJob::Execute()
 {
 	eventListenerPtr->HandleEvent(eventNo, eventDataPtr);
-	if(nullptr != eventDataPtr)
-	{
-		delete eventDataPtr;
-	}
+	eventDataPtr = nullptr;
 }
