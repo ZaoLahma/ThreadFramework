@@ -9,6 +9,7 @@
 #define INC_JOBBASE_H_
 
 #include <vector>
+#include <memory>
 
 class JobDataBase
 {
