@@ -173,14 +173,14 @@ void JobDispatcher::ExecuteJobInGroup(std::shared_ptr<JobBase> jobPtr, uint32_t 
 
 void JobDispatcher::ExecuteJobIn(std::shared_ptr<JobBase> jobPtr, const uint32_t ms)
 {
-	JobTimer* timerPtr = new JobTimer(jobPtr, ms);
+	std::shared_ptr<JobTimer> timerPtr = std::make_shared<JobTimer>(jobPtr, ms);
 
 	timerStorage.StoreTimer(timerPtr);
 }
 
 void JobDispatcher::ExecuteJobInGroupIn(std::shared_ptr<JobBase> jobPtr, uint32_t groupId, uint32_t ms)
 {
-	JobTimer* timerPtr = new JobTimer(jobPtr, ms, groupId);
+	std::shared_ptr<TimerBase> timerPtr = std::make_shared<JobTimer>(jobPtr, ms, groupId);
 
 	timerStorage.StoreTimer(timerPtr);
 }
@@ -250,7 +250,7 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo, std::shared_ptr<EventDataBase> 
 
 void JobDispatcher::RaiseEventIn(const uint32_t eventNo, std::shared_ptr<EventDataBase> eventDataPtr, const uint32_t ms)
 {
-	EventTimer* eventTimerPtr = new EventTimer(eventNo, eventDataPtr, ms);
+	std::shared_ptr<TimerBase> eventTimerPtr = std::make_shared<EventTimer>(eventNo, eventDataPtr, ms);
 
 	timerStorage.StoreTimer(eventTimerPtr);
 }
