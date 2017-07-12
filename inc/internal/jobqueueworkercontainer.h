@@ -30,7 +30,7 @@ public:
 	JobQueueWorkerContainer();
 	~JobQueueWorkerContainer();
 	void AddExecGroup(uint32_t groupId, uint32_t maxNoOfThreads);
-	void ScheduleJob(uint32_t groupId, JobBase* jobBase);
+	void ScheduleJob(uint32_t groupId, std::shared_ptr<JobBase> jobBase);
 
 protected:
 

@@ -84,7 +84,7 @@ int main(void)
 	 * Normally the end of the execution would be triggered by an external
 	 * event for example triggered by a window manager
 	 */
-	EndExecutionJob* endExecutionJobPtr = new EndExecutionJob();
+	std::shared_ptr<JobBase> endExecutionJobPtr =  std::make_shared<EndExecutionJob>();
 	const uint32_t msToSleep = 300;
 	/*
 	 * Note how "EXIT_JOB_EXEC_GROUP" is created when it's used. No need to

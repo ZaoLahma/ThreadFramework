@@ -13,6 +13,7 @@
 #include <map>
 #include <cinttypes>
 #include <chrono>
+#include <memory>
 
 #include <vector>
 #include <condition_variable>
@@ -42,13 +43,13 @@ public:
 
 	void AddExecGroup(uint32_t groupId, uint32_t maxNoOfThreads);
 
-	void ExecuteJob(JobBase* jobPtr);
+	void ExecuteJob(std::shared_ptr<JobBase>jobPtr);
 
-	void ExecuteJobInGroup(JobBase* jobPtr, uint32_t groupId);
+	void ExecuteJobInGroup(std::shared_ptr<JobBase> jobPtr, uint32_t groupId);
 
-	void ExecuteJobIn(JobBase* jobPtr, const uint32_t ms);
+	void ExecuteJobIn(std::shared_ptr<JobBase>jobPtr, const uint32_t ms);
 
-	void ExecuteJobInGroupIn(JobBase* jobPtr, uint32_t groupId, uint32_t ms);
+	void ExecuteJobInGroupIn(std::shared_ptr<JobBase> jobPtr, uint32_t groupId, uint32_t ms);
 
 	void SubscribeToEvent(const uint32_t eventNo, EventListenerBase* eventListenerPtr);
 

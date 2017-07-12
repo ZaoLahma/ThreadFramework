@@ -28,12 +28,12 @@ void Worker::run()
 	{
 		isIdling = false;
 
-		JobBase* jobPtr = queuePtr->GetNextJob();
+		std::shared_ptr<JobBase> jobPtr = queuePtr->GetNextJob();
 		while(running && jobPtr != nullptr)
 		{
 			jobPtr->Execute();
 			noOfJobsExecuted++;
-			delete jobPtr;
+			jobPtr = nullptr;
 			jobPtr = queuePtr->GetNextJob();
 		}
 

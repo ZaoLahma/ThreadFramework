@@ -34,6 +34,6 @@ private:
 
 };
 
-typedef std::vector<JobBase*> JobBasePtrVectorT;
+typedef std::vector<std::shared_ptr<JobBase>> JobBasePtrVectorT;
 
 #endif /* INC_JOBBASE_H_ */

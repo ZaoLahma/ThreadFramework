@@ -98,7 +98,9 @@ void JobDispatcher::Log(const char* formatString, ...)
 
 	stringToPrint<<std::string(buf)<<std::endl;
 
-	JobDispatcher::GetApi()->ExecuteJobInGroup(new LogJob(stringToPrint.str()), LOGGING_EXEC_GROUP_ID);
+	std::shared_ptr<JobBase> logJob = std::make_shared<LogJob>(stringToPrint.str());
+
+	JobDispatcher::GetApi()->ExecuteJobInGroup(logJob, LOGGING_EXEC_GROUP_ID);
 }
 
 std::string JobDispatcher::GetTimeStamp()
@@ -159,24 +161,24 @@ void JobDispatcher::AddExecGroup(uint32_t groupId, uint32_t maxNoOfThreads)
 	jobQueueContainer->AddExecGroup(groupId, maxNoOfThreads);
 }
 
-void JobDispatcher::ExecuteJob(JobBase* jobPtr)
+void JobDispatcher::ExecuteJob(std::shared_ptr<JobBase> jobPtr)
 {
 	jobQueueContainer->ScheduleJob(DEFAULT_EXEC_GROUP_ID, jobPtr);
 }
 
-void JobDispatcher::ExecuteJobInGroup(JobBase* jobPtr, uint32_t groupId)
+void JobDispatcher::ExecuteJobInGroup(std::shared_ptr<JobBase> jobPtr, uint32_t groupId)
 {
 	jobQueueContainer->ScheduleJob(groupId, jobPtr);
 }
 
-void JobDispatcher::ExecuteJobIn(JobBase* jobPtr, const uint32_t ms)
+void JobDispatcher::ExecuteJobIn(std::shared_ptr<JobBase> jobPtr, const uint32_t ms)
 {
 	JobTimer* timerPtr = new JobTimer(jobPtr, ms);
 
 	timerStorage.StoreTimer(timerPtr);
 }
 
-void JobDispatcher::ExecuteJobInGroupIn(JobBase* jobPtr, uint32_t groupId, uint32_t ms)
+void JobDispatcher::ExecuteJobInGroupIn(std::shared_ptr<JobBase> jobPtr, uint32_t groupId, uint32_t ms)
 {
 	JobTimer* timerPtr = new JobTimer(jobPtr, ms, groupId);
 
@@ -238,7 +240,7 @@ void JobDispatcher::RaiseEvent(uint32_t eventNo, const EventDataBase* eventDataP
 
 		for( ; eventListenerIter != eventIter->second.end(); ++eventListenerIter)
 		{
-			EventJob* eventJob = new EventJob(*eventListenerIter, eventNo, eventDataPtr);
+			std::shared_ptr<JobBase> eventJob = std::make_shared<EventJob>(*eventListenerIter, eventNo, eventDataPtr);
 
 			JobDispatcher::GetApi()->ExecuteJobInGroup(eventJob, EVENT_EXEC_GROUP_ID);
 		}

@@ -19,7 +19,7 @@ instanceNo(_instanceNo)
 {
 	JobDispatcher::GetApi()->SubscribeToEvent(WORD_FINDER_JOB_FINISHED, this);
 
-	WordFinderJob* jobPtr = new WordFinderJob(instanceNo);
+	std::shared_ptr<JobBase> jobPtr = std::make_shared<WordFinderJob>(instanceNo);
 
 	jobPtr->SetJobData(&jobData);
 

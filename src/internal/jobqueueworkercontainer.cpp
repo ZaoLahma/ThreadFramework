@@ -46,7 +46,7 @@ void JobQueueWorkerContainer::AddExecGroup(uint32_t groupId, uint32_t maxNoOfThr
 	CreateExecGroup(groupId, maxNoOfThreads);
 }
 
-void JobQueueWorkerContainer::ScheduleJob(uint32_t groupId, JobBase* jobPtr)
+void JobQueueWorkerContainer::ScheduleJob(uint32_t groupId, std::shared_ptr<JobBase> jobPtr)
 {
 	JobQueueMapT::iterator queueIter = queueMap.find(groupId);
 

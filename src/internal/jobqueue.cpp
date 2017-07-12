@@ -21,7 +21,6 @@ JobQueue::~JobQueue()
 
 	for( ; jobIter != queue_1.end(); ++jobIter)
 	{
-		delete *jobIter;
 		*jobIter = nullptr;
 	}
 
@@ -31,20 +30,19 @@ JobQueue::~JobQueue()
 
 	for( ; jobIter != queue_2.end(); ++jobIter)
 	{
-		delete *jobIter;
 		*jobIter = nullptr;
 	}
 
 	queue_2.clear();
 }
 
- void JobQueue::QueueJob(JobBase* jobPtr)
+ void JobQueue::QueueJob(std::shared_ptr<JobBase> jobPtr)
  {
 	 std::lock_guard<std::mutex> lockGuard(queueAccessMutex);
 	 currentQueue->push_back(jobPtr);
  }
 
- JobBase* JobQueue::GetNextJob()
+ std::shared_ptr<JobBase> JobQueue::GetNextJob()
  {
 	 std::lock_guard<std::mutex> getJobLock(getJobMutex);
 
@@ -69,7 +67,7 @@ JobQueue::~JobQueue()
 
 	 if((*queueToExecute).size())
 	 {
-		 JobBase* jobToExecutePtr = (*currentElement);
+		 std::shared_ptr<JobBase> jobToExecutePtr = (*currentElement);
 		 currentElement++;
 		 return jobToExecutePtr;
 	 }

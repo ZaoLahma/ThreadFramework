@@ -17,7 +17,7 @@
 class JobTimer : public TimerBase
 {
 public:
-	JobTimer(JobBase* _jobPtr, const uint32_t _ms, uint32_t groupId = DEFAULT_EXEC_GROUP_ID);
+	JobTimer(std::shared_ptr<JobBase> _jobPtr, const uint32_t _ms, uint32_t groupId = DEFAULT_EXEC_GROUP_ID);
 
 	void TimerFunction();
 
@@ -25,7 +25,7 @@ protected:
 
 private:
 	JobTimer();
-	JobBase* jobPtr;
+	std::shared_ptr<JobBase> jobPtr;
 	uint32_t groupId;
 };
 
