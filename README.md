@@ -18,7 +18,7 @@ JobDispatcher::GetApi()->AddExecGroup(PRIO_EXEC_GROUP, maxNoOfThreads);
 <br>
 <br>
 Schedule a job in a group:<br>
-std::shared_ptr<JobBase> job = std::make_shared<Job>();<br>
+std::shared_ptr<JobBase> job = std::make_shared\<Job>();<br>
 JobDispatcher::GetApi()->ExecuteJobInGroup(job, PRIO_EXEC_GROUP);
 <br>
 <br>
