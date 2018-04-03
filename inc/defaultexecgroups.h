@@ -7,6 +7,7 @@
 
 #ifndef INC_DEFAULTEXECGROUPS_H_
 #define INC_DEFAULTEXECGROUPS_H_
+#include <cstdint>
 
 static const uint32_t DEFAULT_EXEC_GROUP_ID = 0;
 static const uint32_t LOGGING_EXEC_GROUP_ID = 1;
