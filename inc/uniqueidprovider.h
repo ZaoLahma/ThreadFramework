@@ -14,6 +14,7 @@ class UniqueIdProvider
 {
 public:
 	static UniqueIdProvider* GetApi();
+	static void DropInstance();
 	uint32_t GetUniqueId();
 
 protected:

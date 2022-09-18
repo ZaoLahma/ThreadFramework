@@ -9,6 +9,7 @@
 #include <iostream>
 #include "jobbase.h"
 #include "exec_groups.h"
+#include "uniqueidprovider.h"
 
 class EndExecutionJob : public JobBase
 {
@@ -103,4 +104,5 @@ int main(void)
 	 * Just to clean up
 	 */
 	JobDispatcher::DropInstance();
+	UniqueIdProvider::DropInstance();
 }

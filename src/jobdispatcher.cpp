@@ -76,8 +76,16 @@ JobDispatcher* JobDispatcher::GetApi()
 
 void JobDispatcher::DropInstance()
 {
-	delete instance;
-	instance = nullptr;
+	if(nullptr != instance)
+	{
+		instanceCreationMutex.lock();
+		if(nullptr != instance)
+		{
+			delete instance;
+			instance = nullptr;
+		}
+		instanceCreationMutex.unlock();
+	}
 }
 
 void JobDispatcher::Log(const char* formatString, ...)
