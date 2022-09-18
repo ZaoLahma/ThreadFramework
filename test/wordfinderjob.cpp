@@ -37,6 +37,10 @@ void WordFinderJob::Execute()
 		pos = wordFinderDataPtr->wordString.find(wordFinderDataPtr->wordToFind, pos + 1);
 	}
 
+    /*
+	 *  Raise the event that the WordFinder class is waiting for, indicating
+	 *  that this particular instance of the job is finished.
+	 */
 	std::shared_ptr<WordFinderJobFinishedEventData> eventDataPtr = std::make_shared<WordFinderJobFinishedEventData>();
 	eventDataPtr->instanceId = instanceNo;
 

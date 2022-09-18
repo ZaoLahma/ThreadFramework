@@ -17,7 +17,7 @@
 class WordFinder : public EventListenerBase
 {
 public:
-	WordFinder(const std::string& string, const std::string& wordToFind, const uint32_t _instanceNo);
+	WordFinder(const std::string& string, const std::string& wordToFind, const uint32_t _instanceNo, const uint32_t _execGroup);
 
 	void HandleEvent(const uint32_t eventNo, std::shared_ptr<EventDataBase> dataPtr);
 
@@ -27,6 +27,8 @@ private:
 	std::shared_ptr<WordFinderData> jobData;
 
 	const uint32_t instanceNo;
+
+	const uint32_t execGroup;
 
 	static std::mutex instanceMutex;
 };
